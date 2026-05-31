@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz KTCT Mác-Lênin</title>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Reset CSS cơ bản */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.3s ease;
+    }
+    * {
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo, useEffect } = React;
+
+    const ALL_QUESTIONS = [
+      // ===== PHẦN I - CHƯƠNG 1 =====
+      { id:"I1-C5", part:"Phần I", chapter:"Chương 1", q:"Câu 5: Ai là người phát triển lý luận kinh tế chính trị trong giai đoạn cuối thế kỷ XIX – đầu thế kỷ XX?", opts:["A. François Quesnay","B. V.I. Lênin","C. A. Montchrétien","D. Thomas Mun"], ans:1 },
+      { id:"I1-C78", part:"Phần I", chapter:"Chương 1", q:"Câu 78: Kinh tế chính trị Mác – Lênin là kết quả kế thừa trực tiếp lý luận từ trường phái nào?", opts:["A. Kinh tế chính trị cổ điển Anh","B. Kinh tế học hành vi","C. Chủ nghĩa trọng thương","D. Chủ nghĩa trọng nông"], ans:0 },
+      { id:"I1-C79", part:"Phần I", chapter:"Chương 1", q:"Câu 79: Ai là người sáng lập ra lý luận kinh tế chính trị Mác – Lênin?", opts:["A. C. Mác và Ph. Ăngghen","B. V.I. Lênin","C. A. Smith","D. D. Ricardo"], ans:0 },
+      { id:"I1-C94", part:"Phần I", chapter:"Chương 1", q:"Câu 94: Những lý luận nền tảng về kinh tế thị trường được xây dựng bởi:", opts:["A. Chủ nghĩa trọng thương","B. Kinh tế chính trị Mác - Lê nin","C. Chủ nghĩa trọng nông","D. Kinh tế chính trị tư sản cổ điển Anh"], ans:3 },
+      { id:"I1-C95", part:"Phần I", chapter:"Chương 1", q:"Câu 95: Đối tượng nghiên cứu của Kinh tế chính trị Mác – Lênin là:", opts:["A. Giá cả và tiền tệ","B. Hoạt động doanh nghiệp","C. Quy luật cung – cầu trong thị trường","D. Quan hệ xã hội của sản xuất và trao đổi"], ans:3 },
+
+      // ===== PHẦN I - CHƯƠNG 2 =====
+      { id:"I2-C2", part:"Phần I", chapter:"Chương 2", q:"Câu 2: Chức năng thước đo giá trị của tiền tệ có nghĩa là?", opts:["A. Tiền dùng để mua hàng hoặc trả nợ","B. Tiền được rút khỏi quá trình lưu thông và được cất giữ nhằm cất trữ của cải","C. Tiền dùng làm trung gian trong trao đổi hàng hóa","D. Tiền dùng để đo lường giá trị của các hàng hóa khác"], ans:3 },
+      { id:"I2-C12", part:"Phần I", chapter:"Chương 2", q:"Câu 12: Để khắc phục các khuyết tật của kinh tế thị trường Nhà nước cần:", opts:["A. Hạn chế hoạt động kinh doanh của khu vực tư nhân trong lĩnh vực ngân hàng","B. Thực hiện sản xuất và cung ứng tất cả các hàng hóa công cộng","C. Xây dựng hệ thống pháp luật, chính sách và cơ chế phù hợp để điều tiết thị trường","D. Quy định giá trần và giá sàn cho tất cả các hàng hóa – dịch vụ"], ans:2 },
+      { id:"I2-C16", part:"Phần I", chapter:"Chương 2", q:"Câu 16: Giá trị thương hiệu quốc gia của Việt Nam năm 2024 xếp thứ bao nhiêu trong số 193 quốc gia được đánh giá?", opts:["A. 32","B. 30","C. 33","D. 31"], ans:3 },
+      { id:"I2-C17", part:"Phần I", chapter:"Chương 2", q:"Câu 17: Các quốc gia có dịch vụ chiếm tỷ trọng lớn trong GDP thường thuộc nhóm nào?", opts:["A. Nhóm các quốc gia phát triển","B. Nhóm các quốc gia công nghiệp mới","C. Nhóm các quốc gia có trình độ phát triển kinh tế khá","D. Nhóm các quốc gia có trình độ phát triển kinh tế thấp"], ans:0 },
+      { id:"I2-C19", part:"Phần I", chapter:"Chương 2", q:"Câu 19: Mệnh giá 1 cổ phiếu trên thị trường chứng khoán Việt Nam hiện nay là:", opts:["A. 20.000 đồng","B. 25.000 đồng","C. 15.000 đồng","D. 10.000 đồng"], ans:3 },
+      { id:"I2-C34", part:"Phần I", chapter:"Chương 2", q:"Câu 34: Chức năng phương tiện lưu thông của tiền tệ có nghĩa là?", opts:["A. Tiền dùng làm phương tiện thúc đẩy lưu thông hàng hóa","B. Tiền dùng để mua hàng hoặc trả nợ","C. Tiền dùng để đo lường giá trị của các hàng hóa khác","D. Tiền được rút khỏi quá trình lưu thông và được cất giữ nhằm cất trữ của cải"], ans:0 },
+      { id:"I2-C35", part:"Phần I", chapter:"Chương 2", q:"Câu 35: Quy luật giá trị yêu cầu việc sản xuất và trao đổi hàng hóa phải được tiến hành dựa trên:", opts:["A. Hao phí lao động xã hội","B. Các quy định của nhà nước về đấu thầu","C. Các quy định của nhà nước về đấu giá","D. Hao phí lao động cá biệt"], ans:0 },
+      { id:"I2-C36", part:"Phần I", chapter:"Chương 2", q:"Câu 36: Ở Việt Nam, giá trị đất đai trong mua bán bất động sản là:", opts:["A. Giá trị quyền sở hữu đất","B. Giá trị lợi thế thương mại","C. Giá trị quyền sử dụng đất","D. Giá trị tiền thuê đất hàng năm"], ans:2 },
+      { id:"I2-C41", part:"Phần I", chapter:"Chương 2", q:"Câu 41: Ưu thế của nền kinh tế thị trường là?", opts:["A. Luôn đảm bảo công bằng xã hội tuyệt đối","B. Loại trừ nguy cơ khủng hoảng kinh tế","C. Tạo động lực cho sự sáng tạo của các chủ thể kinh tế","D. Loại trừ được cạnh tranh không lành mạnh"], ans:2 },
+      { id:"I2-C49", part:"Phần I", chapter:"Chương 2", q:"Câu 49: Dịch vụ không có đặc điểm nào?", opts:["A. Không thể cất trữ","B. Việc sản xuất và tiêu dùng được diễn ra đồng thời","C. Tính đồng nhất","D. Tính vô hình"], ans:2 },
+      { id:"I2-C52", part:"Phần I", chapter:"Chương 2", q:"Câu 52: Chức năng phương tiện cất trữ của tiền tệ có nghĩa là?", opts:["A. Tiền dùng để mua hàng hoặc trả nợ","B. Tiền dùng để đo lường giá trị của các hàng hóa khác","C. Tiền dùng làm phương tiện thúc đẩy lưu thông hàng hóa","D. Tiền được rút khỏi quá trình lưu thông và được cất giữ nhằm cất trữ của cải"], ans:3 },
+      { id:"I2-C56", part:"Phần I", chapter:"Chương 2", q:"Câu 56: Loại chứng khoán nào sau đây không có thời điểm đáo hạn?", opts:["A. Trái phiếu","B. Cổ phiếu","C. Chứng quyền","D. Hợp đồng tương lai"], ans:1 },
+      { id:"I2-C59", part:"Phần I", chapter:"Chương 2", q:"Câu 59: Một trong những khuyết tật của kinh tế thị trường là?", opts:["A. Thiếu hụt hàng hóa công cộng","B. Tối ưu hóa phân bổ nguồn lực","C. Hạn chế đổi mới sáng tạo","D. Tự do hóa thương mại và đầu tư"], ans:0 },
+      { id:"I2-C62", part:"Phần I", chapter:"Chương 2", q:"Câu 62: Cơ chế thị trường hoạt động dựa trên nguyên tắc nào sau đây?", opts:["A. Kế hoạch hóa tập trung","B. Phân phối thu nhập công bằng","C. Các doanh nghiệp nhà nước chiếm thị phần khống chế trong tất cả các ngành","D. Tự do cạnh tranh, giá cả do thị trường quyết định"], ans:3 },
+      { id:"I2-C70", part:"Phần I", chapter:"Chương 2", q:"Câu 70: Yếu tố nào sau đây là cốt lõi trong xây dựng giá trị của một thương hiệu?", opts:["A. Quảng cáo, tiếp thị","B. Quy mô kinh doanh","C. Chất lượng của sản phẩm/dịch vụ","D. Bao bì, hình thức của sản phẩm/dịch vụ"], ans:2 },
+      { id:"I2-C76", part:"Phần I", chapter:"Chương 2", q:"Câu 76: Chức năng phương tiện thanh toán của tiền có nghĩa là?", opts:["A. Tiền dùng để đo lường giá trị của các hàng hóa khác","B. Tiền dùng để mua hàng hoặc trả nợ","C. Tiền dùng làm phương tiện thúc đẩy lưu thông hàng hóa","D. Tiền được rút khỏi quá trình lưu thông và được cất giữ nhằm cất trữ của cải"], ans:1 },
+      { id:"I2-C80", part:"Phần I", chapter:"Chương 2", q:"Câu 80: Khi đồng thời tăng năng suất lao động và cường độ lao động lên 2 lần thì ý nào sau đây là đúng?", opts:["A. Tổng số hàng hóa tăng 2 lần, tổng lượng giá trị tăng 2 lần","B. Tổng giá trị hàng hóa tăng 2 lần, giá trị 1 đơn vị hàng hóa không thay đổi","C. Tổng giá trị hàng hóa tăng 2 lần, giá trị 1 đơn vị hàng hóa giảm 2 lần","D. Tổng số hàng hóa tăng 4 lần, tổng lượng giá trị tăng 4 lần"], ans:2 },
+      { id:"I2-C87", part:"Phần I", chapter:"Chương 2", q:"Câu 87: Hình thái giá trị ban đầu trong trao đổi hàng hóa là:", opts:["A. Hình thái giá trị ngẫu nhiên","B. Hình thái giá trị đầy đủ","C. Hình thái tiền","D. Hình thái giá trị chung"], ans:0 },
+      { id:"I2-C96", part:"Phần I", chapter:"Chương 2", q:"Câu 96: Giá trị quyền sử dụng đất phụ thuộc chủ yếu vào?", opts:["A. Quy định của nhà nước","B. Mục đích sử dụng đất","C. Độ màu mỡ của đất","D. Vị trí của đất đai"], ans:3 },
+      { id:"I2-C101", part:"Phần I", chapter:"Chương 2", q:"Câu 101: Căn cứ vào tính chất và cơ chế vận hành, thị trường phân thành:", opts:["A. Thị trường tư liệu sản xuất, thị trường tư liệu tiêu dùng","B. Thị trường tự do, thị trường có điều tiết, thị trường cạnh tranh hoàn hảo, thị trường cạnh tranh không hoàn hảo","C. Thị trường theo các loại hàng hóa, dịch vụ khác nhau","D. Thị trường trong nước, thị trường thế giới"], ans:1 },
+
+      // ===== PHẦN I - CHƯƠNG 3 =====
+      { id:"I3-C4", part:"Phần I", chapter:"Chương 3", q:"Câu 4: Thời gian sản xuất là?", opts:["A. Thời gian mà tư bản nằm trong giai đoạn sản xuất","B. Thời gian lao động để tạo ra sản phẩm","C. Thời gian tiêu thụ sản phẩm","D. Thời gian luân chuyển vốn"], ans:0 },
+      { id:"I3-C6", part:"Phần I", chapter:"Chương 3", q:"Câu 6: Hao mòn vô hình của tư bản cố định là do?", opts:["A. Cường độ sử dụng quá cao","B. Sự tiến bộ của khoa học công nghệ làm cho tư bản cố định cũ bị mất giá","C. Người sử dụng không thực hiện bảo dưỡng định kỳ","D. Quan hệ cung - cầu về tài sản trên thị trường"], ans:1 },
+      { id:"I3-C15", part:"Phần I", chapter:"Chương 3", q:"Câu 15: Tư bản thương nghiệp có chức năng gì?", opts:["A. Thúc đẩy phát triển hệ thống hạ tầng giao thông vận tải và thị trường tài chính","B. Biến hàng hóa thành tiền và tiền thành hàng hóa, thúc đẩy lưu thông hàng hóa","C. Cho vay vốn","D. Trực tiếp sản xuất ra hàng hóa"], ans:1 },
+      { id:"I3-C26", part:"Phần I", chapter:"Chương 3", q:"Câu 26: Cấu tạo hữu cơ của tư bản (c/v) là gì?", opts:["A. Tỷ lệ giữa giá trị thặng dư và tư bản khả biến","B. Tỷ lệ giữa giá trị tư bản bất biến và giá trị tư bản khả biến","C. Tỷ lệ giữa tư bản cố định và tư bản lưu động","D. Tỷ lệ giữa tư liệu sản xuất và sức lao động"], ans:1 },
+      { id:"I3-C32", part:"Phần I", chapter:"Chương 3", q:"Câu 32: Khi tốc độ chu chuyển của tư bản tăng lên, điều gì sẽ xảy ra?", opts:["A. Giá trị của tư bản bất biến tăng","B. Khối lượng giá trị thặng dư tạo ra trong một thời kỳ tăng","C. Giá trị của tư bản khả biến giảm","D. Khối lượng giá trị thặng dư tạo ra trong một thời kỳ giảm"], ans:1 },
+      { id:"I3-C33", part:"Phần I", chapter:"Chương 3", q:"Câu 33: Tư bản cố định là bộ phận tư bản bất biến mà giá trị của nó?", opts:["A. Không chuyển vào sản phẩm","B. Biến đổi theo từng chu kỳ sản xuất","C. Chuyển từng phần vào giá trị sản phẩm theo mức độ hao mòn","D. Chuyển toàn bộ vào giá trị sản phẩm trong một chu kỳ sản xuất"], ans:2 },
+      { id:"I3-C39", part:"Phần I", chapter:"Chương 3", q:"Câu 39: Chọn ý đúng về mối quan hệ giữa tỷ suất lợi nhuận (p') và tỷ suất giá trị thặng dư (m'):", opts:["A. p' lớn hơn m'","B. p' phản ánh trực tiếp trình độ bóc lột của nhà tư bản","C. p' nhỏ hơn m'","D. m' chỉ ra nơi đầu tư có lợi cho nhà tư bản"], ans:2 },
+      { id:"I3-C40", part:"Phần I", chapter:"Chương 3", q:"Câu 40: Lợi nhuận bình quân là?", opts:["A. Lợi nhuận mà mọi doanh nghiệp đều có thể đạt được khi đầu tư tư bản vào các ngành","B. Số lợi nhuận bằng nhau của những tư bản như nhau đầu tư vào những ngành khác nhau","C. Lợi nhuận bình quân giữa nông nghiệp, công nghiệp, lâm nghiệp, thương mại","D. Số lợi nhuận bằng nhau của những tư bản như nhau đầu tư vào cùng một ngành"], ans:1 },
+      { id:"I3-C45", part:"Phần I", chapter:"Chương 3", q:"Câu 45: Chọn ý KHÔNG ĐÚNG về mối quan hệ giữa lợi nhuận và giá trị thặng dư:", opts:["A. Lợi nhuận là hình thức biểu hiện biến tướng của giá trị thặng dư","B. Giá trị thặng dư được hình thành trong sản xuất, còn lợi nhuận thể hiện trên thị trường","C. Lợi nhuận và giá trị thặng dư xét về lượng bằng nhau trong mọi trường hợp","D. Bản chất của lợi nhuận là giá trị thặng dư được \"che giấu\""], ans:2 },
+      { id:"I3-C46", part:"Phần I", chapter:"Chương 3", q:"Câu 46: Lợi nhuận thương nghiệp là gì?", opts:["A. Phần giá trị thặng dư mà nhà tư bản công nghiệp nhượng lại cho nhà tư bản thương nghiệp","B. Phần chênh lệch giữa giá mua và giá bán của nhà tư bản thương nghiệp","C. Lợi nhuận từ sản xuất","D. Lợi nhuận từ hoạt động đầu tư tài chính của doanh nghiệp"], ans:0 },
+      { id:"I3-C50", part:"Phần I", chapter:"Chương 3", q:"Câu 50: Cấu tạo hữu cơ của tư bản tăng lên phản ánh?", opts:["A. Tư bản khả biến tăng nhanh hơn tư bản bất biến","B. Năng suất lao động giảm","C. Tư bản bất biến tăng nhanh hơn tư bản khả biến","D. Tư bản bất biến giảm"], ans:2 },
+      { id:"I3-C55", part:"Phần I", chapter:"Chương 3", q:"Câu 55: Tốc độ chu chuyển của tư bản được đo bằng gì?", opts:["A. Tổng lượng tư bản sử dụng trong 1 năm","B. Thời gian sản xuất cộng thời gian lưu thông của tư bản","C. Số vòng tuần hoàn của tư bản trong 1 năm","D. Tổng thời gian của một vòng tuần hoàn tư bản"], ans:2 },
+      { id:"I3-C57", part:"Phần I", chapter:"Chương 3", q:"Câu 57: Vòng tuần hoàn của tư bản là?", opts:["A. Vòng đời của một sản phẩm","B. Sự trao đổi hàng hóa trên thị trường","C. Quá trình luân chuyển tiền tệ trong ngân hàng","D. Tư bản tiền tệ, tư bản sản xuất, tư bản hàng hóa"], ans:3 },
+      { id:"I3-C69", part:"Phần I", chapter:"Chương 3", q:"Câu 69: Tỷ suất lợi nhuận (p') là tỷ lệ tính theo phần trăm giữa?", opts:["A. Lợi nhuận và tư bản khả biến","B. Lợi nhuận và tổng tư bản ứng trước","C. Lợi nhuận và doanh thu","D. Lợi nhuận và tư bản bất biến"], ans:1 },
+      { id:"I3-C73", part:"Phần I", chapter:"Chương 3", q:"Câu 73: Hao mòn hữu hình của tư bản cố định là do?", opts:["A. Sự lạc hậu về kỹ thuật","B. Quan hệ cung - cầu về tài sản trên thị trường","C. Quá trình sử dụng và tác động của tự nhiên","D. Thay đổi nhu cầu tiêu dùng"], ans:2 },
+      { id:"I3-C77", part:"Phần I", chapter:"Chương 3", q:"Câu 77: Thời gian lưu thông là?", opts:["A. Thời gian mà tư bản nằm trong quá trình sản xuất","B. Thời gian để sản xuất ra hàng hóa","C. Thời gian vận chuyển hàng hóa từ nơi sản xuất đến nơi tiêu thụ","D. Thời gian mà tư bản chỉ tồn tại dưới hình thái tiền tệ và hàng hóa"], ans:3 },
+      { id:"I3-C89", part:"Phần I", chapter:"Chương 3", q:"Câu 89: Vai trò chủ yếu của tư bản thương nghiệp trong nền kinh tế thị trường là:", opts:["A. Giảm giá cả hàng hóa","B. Tăng hiệu quả chu chuyển tư bản","C. Làm giảm cầu hàng hóa","D. Thúc đẩy tiến bộ khoa học kỹ thuật"], ans:1 },
+      { id:"I3-C93", part:"Phần I", chapter:"Chương 3", q:"Câu 93: Sự hình thành lợi nhuận bình quân và giá cả sản xuất là kết quả của?", opts:["A. Cạnh tranh trong nội bộ ngành","B. Quy luật cung cầu","C. Độc quyền sản xuất","D. Cạnh tranh giữa các ngành"], ans:3 },
+      { id:"I3-C98", part:"Phần I", chapter:"Chương 3", q:"Câu 98: Tư bản lưu động chuyển giá trị của nó thế nào?", opts:["A. Không chuyển vào sản phẩm","B. Chuyển từng phần vào giá trị sản phẩm theo mức độ hao mòn","C. Chuyển toàn bộ vào sản phẩm trong một chu kỳ sản xuất","D. Biến đổi liên tục"], ans:2 },
+
+      // ===== PHẦN I - CHƯƠNG 4 =====
+      { id:"I4-C8", part:"Phần I", chapter:"Chương 4", q:"Câu 8: Chủ nghĩa tư bản ngày nay có những đặc điểm mới nào so với thời Lênin?", opts:["A. Sản xuất nông nghiệp là chủ yếu","B. Vai trò của nhà nước giảm đi","C. Không còn độc quyền","D. Xuất hiện các công ty xuyên quốc gia"], ans:3 },
+      { id:"I4-C9", part:"Phần I", chapter:"Chương 4", q:"Câu 9: Xuất khẩu tư bản hiện nay chủ yếu dưới hình thức nào?", opts:["A. Viện trợ không hoàn lại","B. Đầu tư trực tiếp nước ngoài","C. Hỗ trợ kỹ thuật","D. Chỉ cho vay"], ans:1 },
+      { id:"I4-C21", part:"Phần I", chapter:"Chương 4", q:"Câu 21: Nguyên nhân ra đời của độc quyền nhà nước trong chủ nghĩa tư bản là do:", opts:["A. Xu thế quốc tế hóa đời sống kinh tế, sự gia tăng mâu thuẫn xã hội, nhu cầu ổn định kinh tế vĩ mô","B. Mong muốn của giai cấp công nhân","C. Nhu cầu phát triển độc lập","D. Sự phát triển của nông nghiệp"], ans:0 },
+      { id:"I4-C30", part:"Phần I", chapter:"Chương 4", q:"Câu 30: Sự can thiệp của nhà nước tư sản vào kinh tế trong nền kinh tế thị trường tư bản chủ nghĩa nhằm mục đích gì?", opts:["A. Giảm lợi nhuận của các tập đoàn","B. Thực hiện chủ nghĩa xã hội","C. Xóa bỏ hoàn toàn độc quyền","D. Điều tiết kinh tế vĩ mô, khắc phục khủng hoảng, bảo vệ lợi ích của tư bản độc quyền"], ans:3 },
+      { id:"I4-C37", part:"Phần I", chapter:"Chương 4", q:"Câu 37: Các chính sách phát triển kinh tế, thuế, an sinh xã hội và giáo dục, y tế hiện nay tại Việt Nam thể hiện rõ nhất đặc trưng nào của KTTT định hướng XHCN?", opts:["A. Tồn tại nhiều hình thức sở hữu và thành phần kinh tế","B. Tăng trưởng kinh tế gắn với công bằng và tiến bộ xã hội","C. Kinh tế nhà nước giữ vai trò chủ đạo, kinh tế tư nhân là động lực quan trọng","D. Thực hiện nhiều hình thức phân phối, chủ yếu phân phối theo lao động và hiệu quả kinh tế"], ans:1 },
+      { id:"I4-C38", part:"Phần I", chapter:"Chương 4", q:"Câu 38: Hạn chế của độc quyền nhà nước trong chủ nghĩa tư bản là?", opts:["A. Thúc đẩy tăng trưởng quá nhanh","B. Làm sâu sắc thêm mâu thuẫn giữa tư bản độc quyền và toàn xã hội","C. Giảm thất nghiệp","D. Làm giảm lợi nhuận của các tập đoàn"], ans:1 },
+      { id:"I4-C48", part:"Phần I", chapter:"Chương 4", q:"Câu 48: Độc quyền nhà nước trong chủ nghĩa tư bản là sự kết hợp giữa?", opts:["A. Nhà nước và các công ty tư nhân nhỏ lẻ","B. Sức mạnh của các tổ chức độc quyền tư nhân với sức mạnh của nhà nước tư sản","C. Kinh tế thị trường và kinh tế kế hoạch","D. Tư bản trong nước và tư bản nước ngoài"], ans:1 },
+      { id:"I4-C51", part:"Phần I", chapter:"Chương 4", q:"Câu 51: Sự điều tiết của nhà nước tư sản thể hiện qua các chính sách nào?", opts:["A. Chỉ chính sách tiền tệ","B. Chỉ chính sách xã hội","C. Chỉ chính sách giáo dục","D. Chính sách tài khóa, tiền tệ, giá cả, thu nhập, đầu tư, xuất nhập khẩu"], ans:3 },
+      { id:"I4-C61", part:"Phần I", chapter:"Chương 4", q:"Câu 61: Các hình thức chủ yếu của độc quyền nhà nước trong chủ nghĩa tư bản là?", opts:["A. Chỉ có sở hữu nhà nước","B. Chỉ có tư hữu hóa","C. Sở hữu nhà nước, sự điều tiết của nhà nước, kết hợp độc quyền nhà nước và độc quyền tư nhân","D. Chỉ có kế hoạch hóa tập trung"], ans:2 },
+      { id:"I4-C64", part:"Phần I", chapter:"Chương 4", q:"Câu 64: Kết hợp độc quyền nhà nước tư sản với độc quyền tư nhân biểu hiện ở?", opts:["A. Chỉ trong các công ty quốc phòng","B. Chỉ khi có khủng hoảng kinh tế","C. Các liên minh độc quyền nhà nước - tư nhân, sự tham gia của đại diện độc quyền vào bộ máy nhà nước","D. Chỉ trong lĩnh vực dịch vụ công"], ans:2 },
+      { id:"I4-C67", part:"Phần I", chapter:"Chương 4", q:"Câu 67: Các công ty xuyên quốc gia (TNCs) có vai trò gì trong chủ nghĩa tư bản hiện đại?", opts:["A. Hạn chế cạnh tranh","B. Chỉ hoạt động trong nước","C. Đóng vai trò ngày càng quan trọng trong sản xuất, thương mại, đầu tư toàn cầu, thúc đẩy quốc tế hóa","D. Chỉ sản xuất các mặt hàng tiêu dùng"], ans:2 },
+      { id:"I4-C68", part:"Phần I", chapter:"Chương 4", q:"Câu 68: Ưu điểm của độc quyền nhà nước trong chủ nghĩa tư bản là?", opts:["A. Loại bỏ khủng hoảng kinh tế","B. Không có cạnh tranh","C. Có khả năng ổn định kinh tế vĩ mô, tập trung nguồn lực phát triển các ngành trọng yếu","D. Xóa bỏ hoàn toàn phân hóa giàu nghèo"], ans:2 },
+      { id:"I4-C99", part:"Phần I", chapter:"Chương 4", q:"Câu 99: Nhà nước tư sản đảm nhận đầu tư vào ngành nào?", opts:["A. Đầu tư nhỏ, thu hồi vốn nhanh, lợi nhuận cao","B. Đầu tư lớn, thu hồi vốn chậm, lợi nhuận thấp","C. Đầu tư lớn, thu hồi vốn chậm, lợi nhuận cao","D. Đầu tư lớn, thu hồi vốn nhanh, lợi nhuận ít"], ans:1 },
+      { id:"I4-C100", part:"Phần I", chapter:"Chương 4", q:"Câu 100: Giá cả sản xuất bằng?", opts:["A. Giá bán trên thị trường","B. Chi phí nguyên vật liệu","C. Giá trị hàng hóa cộng với lợi nhuận bình quân","D. Chi phí sản xuất cộng với lợi nhuận bình quân"], ans:3 },
+
+      // ===== PHẦN I - CHƯƠNG 5+6 =====
+      { id:"I56-C1", part:"Phần I", chapter:"Chương 5+6", q:"Câu 1: Vai trò của cách mạng công nghiệp đối với phát triển là:", opts:["A. Thúc đẩy phát triển lực lượng sản xuất","B. Bảo tồn văn hóa","C. Ổn định dân số","D. Giảm cạnh tranh"], ans:0 },
+      { id:"I56-C3", part:"Phần I", chapter:"Chương 5+6", q:"Câu 3: Chọn đáp án đúng: Cho đến nay có mấy mô hình công nghiệp hoá đã được triển khai thực hiện?", opts:["A. 3","B. 4","C. 2","D. 1"], ans:0 },
+      { id:"I56-C7", part:"Phần I", chapter:"Chương 5+6", q:"Câu 7: Chọn đáp án đúng nhất về tác động tích cực của hội nhập kinh tế quốc tế:", opts:["A. Hội nhập kinh tế quốc tế tạo điều kiện mở rộng thị trường, tiếp thu khoa học - công nghệ, vốn, chuyển dịch cơ cấu kinh tế trong nước.","B. Hội nhập kinh tế quốc tế gia tăng sự phụ thuộc do nợ nước ngoài, tình trạng bất bình đẳng trương trao đổi mậu dich.","C. Hội nhập kinh tế quốc tế tạo ra nhiều cơ hội việc làm mới và nâng cao mức thu nhập tương đối của các tầng lớp dân cư.","D. Hội nhập kinh tế quốc tế giúp mở cửa thị trường, thu hút vốn, thúc đẩy công nghiệp hoá, tăng tích luỹ."], ans:0 },
+      { id:"I56-C10", part:"Phần I", chapter:"Chương 5+6", q:"Câu 10: Việc Chính phủ Việt Nam triển khai các gói hỗ trợ phục hồi kinh tế sau đại dịch COVID- 19 thể hiện rõ nhất đặc trưng nào của Kinh tế thị trường định hướng XHCN?", opts:["A. Thực hiện nhiều hình thức phân phối, chủ yếu phân phối theo lao động và hiệu quả kinh tế","B. Tăng trưởng kinh tế gắn với công bằng và tiến bộ xã hội","C. Tồn tại nhiều hình thức sở hữu và thành phân kinh tế","D. Quản lý nền kinh tế có sự điều tiết của Nhà nước xã hội chủ nghĩa"], ans:3 },
+      { id:"I56-C11", part:"Phần I", chapter:"Chương 5+6", q:"Câu 11: Việc Nhà nước Việt Nam tập trung vào việc tạo lập và phát triển đồng bộ, hiện đại các loại thị trường là một nhiệm vụ nhằm hoàn thiện đặc trưng nào của KTTTĐH XHCN?", opts:["A. Nền kinh tế có nhiều hình thức sở hữu, nhiều thành phần kinh tế","B. Thực hiện nhiều hình thức phân phối, chủ yếu phân phối theo lao động và hiệu quả kinh tế","C. Tồn tại nhiều hình thức sở hữu và thành phân kinh tế","D. Kinh tế thị trường vận hành đầy đủ, đồng bộ theo các quy luật của kinh tế thị trường."], ans:3 },
+      { id:"I56-C13", part:"Phần I", chapter:"Chương 5+6", q:"Câu 13: Chọn đáp án đúng: Trong điều kiện toàn cầu hoá kinh tế, hội nhập kinh tế quốc tế trở thành tất yếu khách quan vì:", opts:["A. Sự phát triển của khoa học - công nghệ làm cho mọi nền kinh tế trở nên độc lập hoàn toàn","B. Toàn cầu hoá kinh tế đã lôi cuốn tất cả các nước vào hệ thống phân công lao động quốc tế","C. Các quốc gia ngày càng có nhu cầu hợp tác để tận dụng lợi thế của nhau","D. Các quốc gia đều muốn mở rộng lãnh thổ và chiếm lĩnh thị trường thế giới"], ans:1 },
+      { id:"I56-C14", part:"Phần I", chapter:"Chương 5+6", q:"Câu 14: Trọng tâm của thể chế kinh tế thị trường là?", opts:["A. Ngân sách quốc gia","B. Chính sách phát triển kinh tế tư nhân và thúc đẩy đổi mới sáng tạo","C. Luật pháp, hệ thống quy tắc, bộ máy quản lý và cơ chế vận hành","D. Luật giá và chính sách quản lý giá"], ans:2 },
+      { id:"I56-C18", part:"Phần I", chapter:"Chương 5+6", q:"Câu 18: Cách mạng khoa học và công nghệ hiện đại ảnh hưởng đến chủ nghĩa tư bản như thế nào?", opts:["A. Thúc đẩy phát triển lực lượng sản xuất, hình thành nền kinh tế tri thức, thay đổi cơ cấu ngành","B. Làm suy thoái nền kinh tế","C. Giảm nhu cầu về lao động trí óc","D. Gây ra lạm phát"], ans:0 },
+      { id:"I56-C20", part:"Phần I", chapter:"Chương 5+6", q:"Câu 20: Cơ quan lãnh đạo nền kinh tế thị trường định hướng XHCN ở Việt Nam là?", opts:["A. Hội đồng doanh nghiệp","B. Quốc hội","C. Đảng Cộng sản Việt Nam","D. Bộ Công thương"], ans:2 },
+      { id:"I56-C22", part:"Phần I", chapter:"Chương 5+6", q:"Câu 22: Trong hoàn thiện thể chế về phân phối thu nhập, giải pháp nào sau đây thể hiện tính định hướng xã hội chủ nghĩa rõ nét nhất?", opts:["A. Thiết lập một hệ thống thuế lũy tiến và thuế tài sản phù hợp để đảm bảo công bằng trong phân phối lại.","B. Tăng cường tính cạnh tranh trong việc trả lương cho người lao động.","C. Bỏ chính sách lương tối thiểu vùng","D. Loại bỏ các quỹ an sinh xã hội và sự tham gia của các tổ chức xã hội trong phân phối thu nhập"], ans:0 },
+      { id:"I56-C23", part:"Phần I", chapter:"Chương 5+6", q:"Câu 23: Thể chế kinh tế thị trường định hướng XHCN là?", opts:["A. Cơ chế thị trường và các chủ thể tham gia thị trường","B. Các chính sách kinh tế của nhà nước","C. Hệ thống pháp luật và bộ máy quản lý nhà nước","D. Hệ thống đường lối, chủ trương chiến lược, luật pháp, chính sách... nhằm hướng đến xác lập đồng bộ các yếu tố thị trường, các loại thị trường hiện đại theo định hướng xã hội chủ nghĩa"], ans:3 },
+      { id:"I56-C24", part:"Phần I", chapter:"Chương 5+6", q:"Câu 24: Chủ trương trong quan hệ quốc tế của Việt Nam là:", opts:["A. Việt Nam muốn là bạn, là đối tác của các nước trong cộng đồng quốc tế","B. Việt Nam sẵn sàng là bạn của các nước trong cộng đồng quốc tế","C. Việt Nam sẵn sàng là bạn, là đối tác tin cậy của các nước trong cộng đồng quốc tế","D. Việt Nam sẵn sàng là bạn tin cậy của các nước trong cộng đồng quốc tế"], ans:2 },
+      { id:"I56-C25", part:"Phần I", chapter:"Chương 5+6", q:"Câu 25: Chọn đáp án đúng: Cách mạng công nghiệp lần thứ nhất diễn ra bắt đầu từ ngành sản xuất nào?", opts:["A. Ngành công nghiệp đường sắt","B. Ngành công nghiệp cơ khí chế tạo","C. Ngành công nghiệp khai khoáng (than, quặng sắt)","D. Ngành công nghiệp dệt"], ans:3 },
+      { id:"I56-C27", part:"Phần I", chapter:"Chương 5+6", q:"Câu 27: Đảng Cộng sản Việt Nam lãnh đạo nền kinh tế thị trường định hướng XHCN thông qua?", opts:["A. Cương lĩnh, pháp luật, kế hoạch, quyết sách, đường lối","B. Cương lĩnh, đường lối, chủ trương, quyết sách lớn","C. Cương lĩnh, đường lối, kế hoạch, chiến lược","D. Cương lĩnh, Luật, Nghị định, chủ trương, quyết sách lớn"], ans:1 },
+      { id:"I56-C29", part:"Phần I", chapter:"Chương 5+6", q:"Câu 29: Chọn đáp án đúng nhất về nội dung hội nhập kinh tế quốc tế:", opts:["A. Thực hiện đa dạng hoá các hình thức hội nhập kinh tế quốc tế.","B. Chuẩn bị các điều kiện để thực hiện hội nhập hiệu quả, thành công.","C. Hội nhập kinh tế quốc tế là phương thức phát triển phổ biến của các nước, nhất là các nước đang và kém phát triển trong điều kiện hiện nay.","D. Các nước đang và kém phát triển cần phải có chiến lược hợp lý, tìm kiếm các đối sách phù hợp để thức ứng với quá trình toàn cầu hoá."], ans:1 },
+      { id:"I56-C31", part:"Phần I", chapter:"Chương 5+6", q:"Câu 31: Chọn đáp án đúng: Câu nói: “Toàn cầu hoá không tốt, không xấu. Nó có sức mạnh để đem lại vô số điều tốt” là của ai?", opts:["A. Josehp E. Stiglitz","B. Thomas Friedman","C. P.A. Samuelson","D. V.I. Lênin"], ans:0 },
+      { id:"I56-C37", part:"Phần I", chapter:"Chương 5+6", q:"Câu 37: Các chính sách phát triển kinh tế, chính sách thuế, chính sách an sinh xã hội và giáo dục, y tế hiện nay tại Việt Nam thể hiện rõ nhất đặc trưng nào của Kinh tế thị trường định hướng XHCN", opts:["A. Tồn tại nhiều hình thức sở hữu và thành phân kinh tế","B. Tăng trưởng kinh tế gắn với công bằng và tiến bộ xã hội","C. Kinh tế nhà nước giữ vai trò chủ đạo, kinh tế tư nhân là động lực quan trọng của nền kinh tế","D. Thực hiện nhiều hình thức phân phối, chủ yếu phân phối theo lao động và hiệu quả kinh tế"], ans:1 },
+      { id:"I56-C42", part:"Phần I", chapter:"Chương 5+6", q:"Câu 42: Chính sách quản lý nào của Nhà nước thể hiện rõ nhất vai trò điều tiết nhằm đảm bảo tính định hướng xã hội chủ nghĩa trong cơ chế phân phối?", opts:["A. Tăng cường kiểm soát giá cả đối với tất cả các mặt hàng tiêu dùng.","B. Chính sách tiền lương tối thiểu và thực hiện bảo hiểm xã hội bắt buộc.","C. Thực hiện cổ phần hóa các doanh nghiệp nhà nước.","D. Đẩy mạnh cải cách hành chính, giảm thủ tục đăng ký kinh doanh."], ans:1 },
+      { id:"I56-C43", part:"Phần I", chapter:"Chương 5+6", q:"Câu 43: Chọn đáp án đúng nhất: Lý do phải hoàn thiện thể thế kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam:", opts:["A. Do hệ thống pháp luật chưa đầy đủ, còn thiếu và chưa đồng bộ; cơ chế thị trường hiện nay còn kém hiệu quả","B. Do hệ thống thể chế còn kém hiệu lực, hiệu quả, thiếu các yếu tố thị trường và các loại thị trường.","C. Do hệ thống thể chế chưa đầy đủ còn thiếu các yếu tố thị trường","D. Do các cơ chế của nền kinh tế thị trường định hướng xã hội chủ nghĩa còn chưa đồng bộ."], ans:1 },
+      { id:"I56-C44", part:"Phần I", chapter:"Chương 5+6", q:"Câu 44: Thành tựu nổi bật nhất của nền kinh tế thị trường định hướng XHCN ở Việt Nam trong những năm qua là?", opts:["A. Nền kinh tế phát triển năng động, duy trì tốc độ tăng trưởng cao, đời sống nhân dân được cải thiện đáng kể","B. Xóa bỏ hoàn toàn khoảng cách giàu nghèo","C. Trở thành nước có nền công nghiệp nặng hàng đầu thế giới","D. Đạt mức thu nhập cao nhất thế giới"], ans:0 },
+      { id:"I56-C47", part:"Phần I", chapter:"Chương 5+6", q:"Câu 47: Chọn đáp án đúng về xây dựng chiến lược và lộ trình hội nhập kinh tế phù hợp:", opts:["A. Về chủ thể tham gia hội nhập, Nhà nước là một chủ thể quan trọng nhưng không phải là duy nhất","B. Vấn đề tranh thủ thời cơ, vượt qua thách thức trong hội nhập quốc tế là vấn đề cần đặc biệt coi trọng.","C. Đánh giá được những điều kiện khách quan, chủ quan có ảnh hưởng đến hội nhập kinh tế của nước ta. Cần làm rõ vị trí của Việt Nam để xác định khả năng và điều kiện để có thể hội nhập.","D. Việt Nam không thể đứng ngoài dòng chảy của lịch sử, hội nhập quốc tế không chỉ là “khẩu hiệu thời thượng” mà phải là “phương thức tồn tại và phát triển” của nước ta hiện nay."], ans:2 },
+      { id:"I56-C53", part:"Phần I", chapter:"Chương 5+6", q:"Câu 53: Chọn đáp án đúng nhất: Các loại thị trường cơ bản ở Việt Nam phân theo đối tượng trao đổi gồm:", opts:["A. Thị trường hàng hoá và dịch vụ; Thị trường lao động; Thị trường công nghệ; thị trường yếu tố sản xuất","B. Thị trường hàng hoá tiêu dùng thông thường; thị trường công nghệ; Thị trường hàng hoá sức lao động; thị trường bất động sản","C. Thị trường Thị trường vốn; thị trường công nghệ; Thị trường hàng hoá sức lao động; thị trường bất động sản","D. Thị trường hàng hoá tiêu dùng thông thường; Thị trường vốn; thị trường công nghệ; thị trường bất động sản"], ans:0 },
+      { id:"I56-C54", part:"Phần I", chapter:"Chương 5+6", q:"Câu 54: Chọn khái niệm đúng nhất về toàn cầu hoá:", opts:["A. Toàn cầu hoá là sự phụ thuộc lẫn nhau ngày càng tăng giữa các quốc gia trên quy mô toàn cầu.","B. Toàn cầu hoá là quá trình tạo ra sự phụ thuộc lẫn nhau ngày càng tăng giữa các quốc gia trên quy mô toàn cầu.","C. Toàn cầu hoá là quá trình tạo ra liên kết ngày càng tăng giữa các quốc gia trên quy mô toàn cầu.","D. Toàn cầu hoá là quá trình tạo ra liên kết và sự phụ thuộc lẫn nhau ngày càng tăng giữa các quốc gia trên quy mô toàn cầu."], ans:3 },
+      { id:"I56-C58", part:"Phần I", chapter:"Chương 5+6", q:"Câu 58: Yếu tố nào dưới đây là cơ bản nhất để Nhà nước có thể đảm bảo hài hòa các quan hệ lợi ích kinh tế?", opts:["A. Bảo vệ lợi ích hợp pháp, tạo môi trường thuận lợi cho hoạt đông tìm kiếm lợi ích của các chủ thể kinh tế","B. Tăng thuế suất thuế thu nhập cá nhân","C. Tăng thuế suất thuế thu nhập doanh nghiệp","D. Tạo môi trường kinh doanh thuận lợi cho khu vực kinh tế tư nhân"], ans:0 },
+      { id:"I56-C60", part:"Phần I", chapter:"Chương 5+6", q:"Câu 60: Xu thế toàn cầu hóa là gì?", opts:["A. Sự liên kết văn hóa","B. Sự độc quyền của một nước trên thế giới","C. Sự phát triển độc lập của mỗi quốc gia","D. Quá trình gia tăng sự phụ thuộc lẫn nhau giữa các quốc gia về kinh tế, chính trị, văn hóa, xã hội"], ans:3 },
+      { id:"I56-C63", part:"Phần I", chapter:"Chương 5+6", q:"Câu 63: Chọn đáp án đúng nhất: Nhà nước quản lý nền kinh tế thị trường định hướng xã hội chủ nghĩa thông qua:", opts:["A. Cương lĩnh, đường lối, chủ trương, quyết sách lớn","B. Hệ thống pháp luật, các chiến lược, kế hoạch, quy hoạch và cơ chế, chính sách.","C. Hệ thống pháp luật, các chiến lược, kế hoạch, quy hoạch và cơ chế, chính sách cùng các công cụ kinh tế trên cơ sở tôn trọng các nguyên tắc của thị trường phù hợp với yêu cầu xây dựng xã hội xã hội chủ nghĩa ở Việt Nam.","D. Hệ thống các chiến lược, kế hoạch, quy hoạch và cơ chế, chính sách cùng các công cụ kinh tế."], ans:2 },
+      { id:"I56-C65", part:"Phần I", chapter:"Chương 5+6", q:"Câu 65: Cuộc cách mạng công nghiệp lần thứ ba gắn với sự phát triển của:", opts:["A. Giao thông vận tải","B. Viễn thông","C. Công nghệ thông tin và máy tính","D. Truyền hình"], ans:2 },
+      { id:"I56-C66", part:"Phần I", chapter:"Chương 5+6", q:"Câu 66: Chọn đáp án đúng nhất: Mục tiêu của kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam là:", opts:["A. Góp phần giảm bớt phân hoá giàu nghèo trong xã hội.","B. Thúc đẩy phát triển kinh tế thị trường và hội nhập quốc tế.","C. Xây dựng quan hệ sản xuất tiến bộ, phù hợp nhằm ngày càng hoàn thiện cơ sở kinh tế - xã hội của chủ nghĩa xã hội.","D. Để đẩy mạnh công nghiệp hoá, hiện đại hoá đất nước, phát triển lực lượng sản xuất, nâng cao năng lực cạnh tranh của nền kinh tế."], ans:3 },
+      { id:"I56-C71", part:"Phần I", chapter:"Chương 5+6", q:"Câu 71: Chọn đáp án đúng nhất về biện pháp trọng tâm để xây dựng thành công nền kinh tế độc lập, tự chủ đi đôi với tích cực hội nhập kinh tế quốc tế:", opts:["A. Hoàn thiện, bổ sung đường lối kinh tế, xây dựng và phát triển đất nước.","B. Đẩy mạnh công nghiệp hoá, hiện đại hoá đất nước.","C. Đẩy mạnh quan hệ đối ngoại và chủ động hội nhập kinh tế quốc tế đáp ứng yêu cầu và lợi ích của đất nước.","D. Tăng cường năng lực cạnh tranh của nền kinh tế bằng hoàn thiện thể chế kinh tế, hành chính, đặc biệt là tăng cường ứng dụng khoa học – công nghệ hiện đại"], ans:3 },
+      { id:"I56-C72", part:"Phần I", chapter:"Chương 5+6", q:"Câu 72: Một trong những nhiệm vụ trọng tâm để hoàn thiện thể chế Kinh tế thị trường định hướng XHCN là 'tạo lập môi trường cạnh tranh bình đẳng, minh bạch'. Điều này có ý nghĩa gì đối với vai trò chủ đạo của kinh tế nhà nước?", opts:["A. Kinh tế nhà nước cần tham gia và kiểm soát hoàn toàn các ngành tài chính và ngân hàng","B. Kinh tế nhà nước phải được ưu tiên hoàn toàn, không cần cạnh tranh","C. Kinh tế nhà nước phải tự chủ kinh doanh, cạnh tranh bình đẳng và chứng minh được vai trò chủ đạo bằng hiệu quả kinh tế.","D. Các quy định về cạnh tranh chỉ áp dụng cho khu vực kinh tế tư nhân"], ans:2 },
+      { id:"I56-C74", part:"Phần I", chapter:"Chương 5+6", q:"Câu 74: Chọn đáp án sai về nội dung hoàn thiện thể chế về các mô hình sản xuất kinh doanh:", opts:["A. Hoàn thiện thể chế về huy động các nguồn lực đầu tư và đổi mới cơ chế quản lý của nhà nước để các đơn vị sự nghiệp công lập phát triển có hiệu quả.","B. Thể chế hoá nội dung và phương thức hoạt động của kinh tế tập thể.","C. Hoàn thiện thể chế quản lý các doanh nghiệp có vốn đầu tư trực tiếp nước ngoài.","D. Thể chế hoá việc cơ cấu lại, đổi mới và nâng cao hiệu quả doanh nghiệp nhà nước."], ans:0 },
+      { id:"I56-C75", part:"Phần I", chapter:"Chương 5+6", q:"Câu 75: Cách mạng công nghiệp lần thứ tư bắt đầu tại nước nào, năm nào?", opts:["A. Đức, năm 2011","B. Hàn Quốc, năm 2012","C. Mỹ, năm 2005","D. Anh, năm 2000"], ans:0 },
+      { id:"I56-C81", part:"Phần I", chapter:"Chương 5+6", q:"Câu 81: Để khắc phục tình trạng 'chảy máu chất xám' (lao động có trình độ cao rời bỏ Việt Nam), nhiệm vụ trọng tâm nào trong hoàn thiện thể chế thị trường lao động cần được ưu tiên?", opts:["A. Tăng cường kiểm soát sự di chuyển của lao động giữa các vùng miền.","B. Xây dựng các khu công nghiệp mới","C. Đơn giản hóa thủ tục xuất nhập cảnh cho lao động nước ngoài","D. Hoàn thiện thể chế về tiền lương, bảo hiểm xã hội, và các cơ chế tạo động lực, tôn vinh người tài."], ans:3 },
+      { id:"I56-C82", part:"Phần I", chapter:"Chương 5+6", q:"Câu 82: Chọn đáp án đúng: Cách mạng công nghiệp lần thứ nhất bắt đầu diễn ra vào thế kỷ nào?", opts:["A. Thế kỷ XVI","B. Thế kỷ XVII","C. Thế kỷ XIX","D. Thế kỷ XVIII"], ans:3 },
+      { id:"I56-C83", part:"Phần I", chapter:"Chương 5+6", q:"Câu 83: Chọn đáp án đúng nhất: Nội dung hoàn thiện thế chế phát triển đồng bộ các yếu tố thị trường gồm:", opts:["A. Hoàn thiện hệ thống thể chế về giá; về thúc đẩy cạnh tranh.","B. Hoàn thiện hệ thống thể chế về giá; về chất lượng hàng hoá, dịch vụ.","C. Hoàn thiện hệ thống thể chế về giá; về thúc đẩy cạnh tranh; về chất lượng hàng hoá, dịch vụ.","D. Hoàn thiện hệ thống thể chế về thúc đẩy cạnh tranh; về chất lượng hàng hoá, dịch vụ."], ans:2 },
+      { id:"I56-C84", part:"Phần I", chapter:"Chương 5+6", q:"Câu 84: Chọn đáp án đúng: Các nước chậm phát triển hiện nay có thể thực hiện công nghiệp hoá bằng con đường nào sau đây?", opts:["A. Tiếp nhận chuyển giao hoàn toàn công nghệ hiện đại từ các nước phát triển.","B. Tập trung phát triển nông nghiệp thuần tuý, không chú trọng công nghiệp và công nghệ.","C. Thông qua tự nghiên cứu, chế tạo để phát triển công nghệ từ trình độ thấp tới trình độ cao.","D. Xây dựng chiến lược phát triển khoa học công nghệ nhiều tầng, kết hợp cả công nghệ truyền thống với công nghệ hiện đại"], ans:3 },
+      { id:"I56-C85", part:"Phần I", chapter:"Chương 5+6", q:"Câu 85: Mục tiêu cơ bản của hoàn thiện thể chế kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam là?", opts:["A. Thúc đẩy tăng trưởng xuất khẩu và thu hút đầu tư nước ngoài","B. Đảm bảo vai trò chủ đạo của kinh tế nhà nước","C. Thúc đẩy phát triển khu vực kinh tế tư nhân","D. Phát triển kinh tế nhanh, hiệu quả, bền vững, hội nhập quốc tế thành công và giữ vững định hướng xã hội chủ nghĩa."], ans:3 },
+      { id:"I56-C86", part:"Phần I", chapter:"Chương 5+6", q:"Câu 86: Chọn đáp án đúng: Chiến lược thực hiện công nghiệp hoá của Nhật Bản và các nước NIC được gọi là gì?", opts:["A. Chiến lược công nghiệp hoá hướng ngoại.","B. Chiến lược công nghiệp hoá rút ngắn dựa trên mục tiêu hướng về xuất khẩu, phát triển sản xuất trong nước thay thế nhập khẩu.","C. Chiến lược công nghiệp hoá kiểu mới thích ứng với những biến đổi của cách mạng công nghiệp lần thứ tư.","D. Chiến lược công nghiệp hoá phát triển sản xuất trong nước thay thế nhập khẩu."], ans:1 },
+      { id:"I56-C88", part:"Phần I", chapter:"Chương 5+6", q:"Câu 88: Chọn đáp án đúng: Phạm trù: “Kinh tế thị trường định hướng xã hội chủ nghĩa” lần đầu tiên được Đảng Cộng sản Việt Nam nêu ra tại Đại hội lần thứ mấy?", opts:["A. Đại hội Đảng toàn quốc lần thứ XIII (2021)","B. Đại hội Đảng toàn quốc lần thứ IX (2001)","C. Đại hội Đảng toàn quốc lần thứ XI (2011)","D. Đại hội Đảng toàn quốc lần thứ VII (1991)"], ans:1 },
+      { id:"I56-C90", part:"Phần I", chapter:"Chương 5+6", q:"Câu 90: Đâu là một trong những thành công nổi bật của công nghiệp hóa, hiện đại hóa ở Việt Nam?", opts:["A. Nông nghiệp lạc hậu","B. Chuyển dịch cơ cấu kinh tế theo hướng công nghiệp, dịch vụ, tăng trưởng kinh tế cao","C. Giảm vai trò của kinh tế thị trường","D. Gia tăng bao cấp"], ans:1 },
+      { id:"I56-C91", part:"Phần I", chapter:"Chương 5+6", q:"Câu 91: Một thách thức lớn về nguồn nhân lực khi công nghiệp hóa, hiện đại hóa là?", opts:["A. Thừa lao động","B. Thiếu hụt lao động chất lượng cao và cơ cấu lao động chưa phù hợp","C. Dân số già hóa","D. Lao động giá rẻ"], ans:1 },
+      { id:"I56-C92", part:"Phần I", chapter:"Chương 5+6", q:"Câu 92: Chủ trương trong quan hệ quốc tế của Việt Nam là:", opts:["A. Việt Nam sẵn sàng là bạn, là đối tác tin cậy của các nước trong cộng đồng quốc tế","B. Việt Nam muốn là bạn, là đối tác của các nước trong cộng đồng quốc tế","C. Việt Nam sẵn sàng là bạn của các nước trong cộng đồng quốc tế","D. Việt Nam sẵn sàng là bạn tin cậy của các nước trong cộng đồng quốc tế"], ans:0 },
+      { id:"I56-C97", part:"Phần I", chapter:"Chương 5+6", q:"Câu 97: Lựa chọn các từ thích hợp dưới đây để điền vào chỗ chấm: Nền kinh tế độc lập, tự chủ là nền kinh tế không bị …(1)…., phụ thuộc vào nước khác, người khác hoặc vào một tổ chức kinh tế nào đó về đường lối, chính sách phát triển, không bị bất cứ ai dùng những điều kiện kinh tế, tài chính, thương mại, viện trợ…để …(2)……, khống chế làm tổn hại … (3)….. quốc gia và …(4)…. cơ bản của dân tộc.", opts:["A. khống chế; áp đặt; lợi ích; chủ quyền.","B. khống chế; chi phối; lợi ích; chủ quyền.","C. lệ thuộc; áp đặt; chủ quyền; lợi ích.","D. lệ thuộc; chi phối; chủ quyền; lợi ích."], ans:1 },
+
+      // ===== PHẦN II - CHƯƠNG 1 =====
+      { id:"II1-C16", part:"Phần II", chapter:"Chương 1", q:"Câu 16: Thuật ngữ \"kinh tế chính trị\" xuất hiện lần đầu vào năm nào?", opts:["A. 1715","B. 1815","C. 1615","D. 1515"], ans:2 },
+      { id:"II1-C25", part:"Phần II", chapter:"Chương 1", q:"Câu 25: Chủ nghĩa trọng nông cho rằng lĩnh vực nào tạo ra giá trị mới?", opts:["A. Công nghiệp","B. Tài chính","C. Thương nghiệp","D. Nông nghiệp"], ans:3 },
+      { id:"II1-C26", part:"Phần II", chapter:"Chương 1", q:"Câu 26: Kinh tế chính trị theo nghĩa hẹp nghiên cứu điều gì?", opts:["A. Hệ thống chính trị","B. Các hoạt động tiêu dùng","C. Quan hệ sản xuất và trao đổi trong một phương thức sản xuất nhất định","D. Quy luật thị trường"], ans:2 },
+      { id:"II1-C34", part:"Phần II", chapter:"Chương 1", q:"Câu 34: Trọng tâm nghiên cứu của Chủ nghĩa trọng thương là lĩnh vực nào?", opts:["A. Nông nghiệp","B. Tài chính","C. Công nghiệp","D. Lưu thông – thương nghiệp"], ans:3 },
+
+      // ===== PHẦN II - CHƯƠNG 2 =====
+      { id:"II2-C2", part:"Phần II", chapter:"Chương 2", q:"Câu 2: Mâu thuẫn cơ bản của sản xuất hàng hóa là mâu thuẫn giữa?", opts:["A. Sản xuất và tiêu dùng","B. Cung và cầu","C. Lao động cụ thể và lao động trừu tượng","D. Lao động giản đơn và lao động phức tạp"], ans:2 },
+      { id:"II2-C5", part:"Phần II", chapter:"Chương 2", q:"Câu 5: Hàng hóa có hai thuộc tính là?", opts:["A. Giá trị sử dụng và giá trị","B. Giá trị và giá cả","C. Giá cả và giá trị trao đổi","D. Giá cả và công dụng"], ans:0 },
+      { id:"II2-C7", part:"Phần II", chapter:"Chương 2", q:"Câu 7: Nền kinh tế hàng hóa hình thành và phát triển khi có các điều kiện nào?", opts:["A. Phân công lao động xã hội và chế độ công hữu về tư liệu sản xuất","B. Phân công lao động cá biệt và chế độ tư hữu về tư liệu sản xuất","C. Phân công lao động xã hội và sự tách biệt về kinh tế giữa các chủ thể sản xuất","D. Phân công lao động và hệ thống thể chế kinh tế"], ans:2 },
+      { id:"II2-C9", part:"Phần II", chapter:"Chương 2", q:"Câu 9: Hai điều kiện để sức lao động trở thành hàng hóa:", opts:["A. Có kỹ năng và kinh nghiệm","B. Người lao động tự do và không sở hữu tư liệu sản xuất","C. Có bằng cấp và sức khỏe","D. Có giấy phép và hợp đồng"], ans:1 },
+      { id:"II2-C10", part:"Phần II", chapter:"Chương 2", q:"Câu 10: Ý nào sau đây KHÔNG ĐÚNG?", opts:["A. Lượng giá trị hàng hóa = hao phí lao động quá khứ + hao phí lao động mới kết tinh thêm","B. Lượng giá trị hàng hóa = c+v+m","C. Lượng giá trị hàng hóa = chi phí sản xuất + giá trị thặng dư","D. Lượng giá trị hàng hóa = chi phí sản xuất + lợi nhuận"], ans:3 },
+      { id:"II2-C11", part:"Phần II", chapter:"Chương 2", q:"Câu 11: Giá trị của hàng hóa là?", opts:["A. Sự khan hiếm của hàng hóa trên thị trường","B. Hao phí lao động xã hội của người sản xuất hàng hóa kết tinh trong hàng hóa","C. Công dụng của hàng hóa có thể thỏa mãn nhu cầu nào đó của con người","D. Giá cả hàng hóa"], ans:1 },
+      { id:"II2-C12", part:"Phần II", chapter:"Chương 2", q:"Câu 12: Khi cường độ lao động tăng lên, tổng lượng giá trị tạo ra trong một đơn vị thời gian sẽ?", opts:["A. Không thay đổi","B. Giảm xuống","C. Không thể xác định","D. Tăng lên"], ans:3 },
+      { id:"II2-C18", part:"Phần II", chapter:"Chương 2", q:"Câu 18: Hàng hóa sức lao động có giá trị và giá trị sử dụng đặc biệt vì?", opts:["A. Gắn với lao động trí óc","B. Là tài sản vô hình","C. Có thể tạo ra giá trị mới lớn hơn bản thân nó","D. Không có giá cả"], ans:2 },
+      { id:"II2-C19", part:"Phần II", chapter:"Chương 2", q:"Câu 19: Lao động trừu tượng là gì?", opts:["A. Sự hao phí sức lao động trong sản xuất công nghiệp","B. Sự hao phí sức lao động nói chung của người sản xuất hàng hóa","C. Lao động tạo ra giá trị sử dụng","D. Sự hao phí sức lao động trong sản xuất nông nghiệp"], ans:1 },
+      { id:"II2-C22", part:"Phần II", chapter:"Chương 2", q:"Câu 22: Ngày lao động là 8h, m'=100%, nhà tư bản tăng ngày lao động lên 1h và giá trị sức lao động giảm 25%. Vậy tỷ suất giá trị thặng dư mới là bao nhiêu?", opts:["A. 200%","B. 250%","C. 300%","D. 150%"], ans:0 },
+      { id:"II2-C31", part:"Phần II", chapter:"Chương 2", q:"Câu 31: Lượng giá trị của hàng hóa được đo bằng?", opts:["A. Thời gian lao động cá biệt","B. Thời gian lao động của người làm việc hiệu quả nhất","C. Tổng thời gian lao động","D. Thời gian lao động xã hội cần thiết"], ans:3 },
+      { id:"II2-C32", part:"Phần II", chapter:"Chương 2", q:"Câu 32: Nhân tố nào là cơ bản, lâu dài để tăng sản phẩm và hiệu quả kinh tế cho xã hội?", opts:["A. Tăng số lượng lao động","B. Tăng năng suất lao động","C. Tăng cường độ lao động","D. Tăng thời gian lao động"], ans:1 },
+      { id:"II2-C40", part:"Phần II", chapter:"Chương 2", q:"Câu 40: Hàng hóa có hai thuộc tính do lao động của người sản xuất hàng hóa có tính hai mặt là:", opts:["A. Lao động cụ thể và lao động trừu tượng","B. Lao động tư nhân và lao động xã hội","C. Lao động giản đơn và lao động phức tạp","D. Lao động tay chân và lao động trí óc"], ans:0 },
+      { id:"II2-C42", part:"Phần II", chapter:"Chương 2", q:"Câu 42: Hàng hóa là?", opts:["A. Sản phẩm của lao động có thể thỏa mãn nhu cầu nào đó của con người thông qua trao đổi, mua bán","B. Sản phẩm của lao động phục vụ nhu cầu sử dụng của người sản xuất","C. Sản phẩm phục vụ tiêu dùng","D. Sản phẩm phục vụ sản xuất"], ans:0 },
+      { id:"II2-C44", part:"Phần II", chapter:"Chương 2", q:"Câu 44: Lao động giản đơn là loại lao động nào?", opts:["A. Lao động trong công nghiệp","B. Lao động trong nông nghiệp","C. Không đòi hỏi quá trình đào tạo một cách có hệ thống, chuyên sâu cũng có thể thao tác được","D. Phải trải qua quá trình đào tạo chuyên môn theo các tiêu chuẩn nghề nghiệp khác nhau"], ans:2 },
+      { id:"II2-C45", part:"Phần II", chapter:"Chương 2", q:"Câu 45: Giá trị sử dụng của hàng hóa thể hiện ở?", opts:["A. Tổng cầu của hàng hóa trên thị trường","B. Công dụng của hàng hóa có thể thỏa mãn nhu cầu nào đó của con người","C. Giá cả của hàng hóa","D. Hao phí lao động xã hội của người sản xuất hàng hóa kết tinh trong hàng hóa"], ans:1 },
+      { id:"II2-C60", part:"Phần II", chapter:"Chương 2", q:"Câu 60: Lao động phức tạp là loại lao động nào?", opts:["A. Lao động trong công nghiệp","B. Không đòi hỏi quá trình đào tạo một cách có hệ thống, chuyên sâu","C. Lao động trong nông nghiệp","D. Phải trải qua quá trình đào tạo chuyên môn theo các tiêu chuẩn nghề nghiệp khác nhau"], ans:3 },
+      { id:"II2-C63", part:"Phần II", chapter:"Chương 2", q:"Câu 63: Giá trị hàng hóa được quyết định bởi?", opts:["A. Công dụng của hàng hóa","B. Quan hệ cung – cầu về hàng hóa","C. Lao động xã hội của người sản xuất hàng hóa","D. Quan hệ cạnh tranh trên thị trường hàng hóa"], ans:2 },
+      { id:"II2-C77", part:"Phần II", chapter:"Chương 2", q:"Câu 77: Khi năng suất lao động xã hội tăng lên, lượng giá trị của một đơn vị hàng hóa sẽ?", opts:["A. Không thay đổi","B. Giảm xuống","C. Tăng lên","D. Tùy thuộc vào năng lực quản lý"], ans:1 },
+      { id:"II2-C89", part:"Phần II", chapter:"Chương 2", q:"Câu 89: Lao động cụ thể phản ánh:", opts:["A. Chính sách lao động – việc làm của nhà nước","B. Tính chất xã hội của lao động sản xuất hàng hóa","C. Tính chất tư nhân của lao động sản xuất hàng hóa","D. Quan hệ cung – cầu trên thị trường lao động"], ans:2 },
+      { id:"II2-C94", part:"Phần II", chapter:"Chương 2", q:"Câu 94: Khi cường độ lao động tăng lên, lượng giá trị của một đơn vị hàng hóa sẽ?", opts:["A. Tăng lên","B. Tùy thuộc vào năng suất lao động","C. Giảm xuống","D. Không thay đổi"], ans:3 },
+      { id:"II2-C99", part:"Phần II", chapter:"Chương 2", q:"Câu 99: Theo C. Mác, sản xuất hàng hóa là?", opts:["A. Sản xuất để tích trữ","B. Sản xuất để sử dụng","C. Sản xuất để trao đổi, mua bán","D. Sản xuất để tiêu dùng cá nhân"], ans:2 },
+      { id:"II2-C100", part:"Phần II", chapter:"Chương 2", q:"Câu 100: Khi tăng năng suất lao động và cường độ lao động sẽ làm cho giá cả hàng hóa:", opts:["A. Tăng lên","B. Có thể tăng lên hoặc giảm xuống","C. Không thay đổi","D. Giảm xuống"], ans:3 },
+
+      // ===== PHẦN II - CHƯƠNG 3 =====
+      { id:"II3-C14", part:"Phần II", chapter:"Chương 3", q:"Câu 14: Tỷ suất giá trị thặng dư (m') cho ta biết điều gì?", opts:["A. Tính toán chi phí sản xuất","B. Xác định giá bán sản phẩm","C. Đo lường trình độ bóc lột sức lao động","D. Cho biết tổng lợi nhuận"], ans:2 },
+      { id:"II3-C21", part:"Phần II", chapter:"Chương 3", q:"Câu 21: Giá trị thặng dư siêu ngạch là?", opts:["A. Giá trị thặng dư thu được nhờ tăng năng suất lao động xã hội","B. Giá trị thặng dư thu được nhờ tăng giá bán","C. Giá trị thặng dư thu được nhờ kéo dài ngày lao động","D. Phần giá trị thặng dư dôi ra ngoài giá trị thặng dư bình quân, do áp dụng kỹ thuật tiên tiến nhất"], ans:3 },
+      { id:"II3-C23", part:"Phần II", chapter:"Chương 3", q:"Câu 23: Việc giảm thời gian lao động tất yếu bằng cách tăng năng suất lao động xã hội sẽ làm tăng loại giá trị thặng dư nào?", opts:["A. Giá trị thặng dư siêu ngạch","B. Giá trị thặng dư tuyệt đối","C. Giá trị thặng dư bình quân","D. Giá trị thặng dư tương đối"], ans:3 },
+      { id:"II3-C27", part:"Phần II", chapter:"Chương 3", q:"Câu 27: Giá trị thặng dư được tạo ra từ quá trình nào?", opts:["A. Phân phối tài sản","B. Sản xuất sử dụng hàng hóa sức lao động","C. Thương mại quốc tế","D. Lưu thông hàng hóa"], ans:1 },
+      { id:"II3-C39", part:"Phần II", chapter:"Chương 3", q:"Câu 39: Tái sản xuất giản đơn là gì?", opts:["A. Toàn bộ giá trị thặng dư được tích lũy","B. Một phần giá trị thặng dư được tiêu dùng, một phần tích lũy","C. Tái sản xuất với quy mô không thay đổi, giá trị thặng dư sử dụng hết cho tiêu dùng","D. Toàn bộ giá trị thặng dư được tiêu dùng cho cá nhân nhà tư bản"], ans:2 },
+      { id:"II3-C43", part:"Phần II", chapter:"Chương 3", q:"Câu 43: Nguồn gốc trực tiếp và chủ yếu của tích luỹ tư bản trong chủ nghĩa tư bản là gì?", opts:["A. Các khoản vay từ ngân hàng và tổ chức tài chính","B. Tài sản kế thừa của các nhà tư bản","C. Giá trị thặng dư do công nhân tạo ra","D. Của cải tiết kiệm từ tiêu dùng cá nhân"], ans:2 },
+      { id:"II3-C49", part:"Phần II", chapter:"Chương 3", q:"Câu 49: Bản chất của tích lũy tư bản là gì?", opts:["A. Bán sản phẩm với giá cao","B. Tái sản xuất giản đơn","C. Biến một phần giá trị thặng dư thành tư bản phụ thêm","D. Tiêu dùng giá trị thặng dư"], ans:2 },
+      { id:"II3-C53", part:"Phần II", chapter:"Chương 3", q:"Câu 53: Tái sản xuất mở rộng là gì?", opts:["A. Toàn bộ giá trị thặng dư được tiêu dùng","B. Quy mô sản xuất giảm dần","C. Giá trị thặng dư được biến thành tư bản phụ thêm để mở rộng sản xuất","D. Sản xuất chỉ đáp ứng nhu cầu cơ bản"], ans:2 },
+      { id:"II3-C54", part:"Phần II", chapter:"Chương 3", q:"Câu 54: Khối lượng giá trị thặng dư (M) được tính bằng công thức?", opts:["A. M = (c+v) × m'","B. M = m' / (c+v)","C. M = m' × C","D. M = m' × V"], ans:3 },
+      { id:"II3-C57", part:"Phần II", chapter:"Chương 3", q:"Câu 57: Giá trị thặng dư tương đối thu được từ?", opts:["A. Giảm chi phí vận chuyển","B. Tăng năng suất lao động xã hội","C. Tăng giờ làm việc","D. Tăng giá bán"], ans:1 },
+      { id:"II3-C58", part:"Phần II", chapter:"Chương 3", q:"Câu 58: Công thức chung của tư bản theo C. Mác là?", opts:["A. H – H – T","B. H – T – H","C. T – H – T'","D. T – H – T"], ans:2 },
+      { id:"II3-C61", part:"Phần II", chapter:"Chương 3", q:"Câu 61: Tỷ suất giá trị thặng dư (m') được tính bằng công thức?", opts:["A. m' = m/v × 100%","B. m' = c/v × 100%","C. m' = (c+v)/m × 100%","D. m' = m/c × 100%"], ans:0 },
+      { id:"II3-C71", part:"Phần II", chapter:"Chương 3", q:"Câu 71: Tiền công thực tế là gì?", opts:["A. Là số lượng hàng hoá và dịch vụ mua được bằng tiền công danh nghĩa","B. Là giá cả của sức lao động","C. Là số tiền trong sổ lương + thưởng + thu nhập khác","D. Là tổng số tiền nhận được thực tế trong 1 tháng"], ans:0 },
+      { id:"II3-C72", part:"Phần II", chapter:"Chương 3", q:"Câu 72: Chọn ý đúng trong các nhận xét dưới đây:", opts:["A. Tư bản bất biến là một bộ phận của tư bản cố định","B. Tư bản lưu động là một bộ phận của tư bản khả biến","C. Tư bản khả biến là một bộ phận của tư bản lưu động","D. Tư bản bất biến luôn thay đổi về lượng trong quá trình sản xuất"], ans:2 },
+      { id:"II3-C87", part:"Phần II", chapter:"Chương 3", q:"Câu 87: Tư bản khả biến là phần tư bản dùng để?", opts:["A. Mua máy móc","B. Đầu tư bất động sản","C. Mua sức lao động","D. Chi cho thuế"], ans:2 },
+      { id:"II3-C88", part:"Phần II", chapter:"Chương 3", q:"Câu 88: Chọn ý đúng về các phạm trù tư bản:", opts:["A. Phạm trù tư bản bất biến rộng hơn phạm trù tư bản cố định","B. Tư bản khả biến không thay đổi về lượng trong quá trình sản xuất","C. Phạm trù tư bản khả biến rộng hơn phạm trù tư bản lưu động","D. Tư bản bất biến luôn thay đổi về lượng trong quá trình sản xuất"], ans:0 },
+      { id:"II3-C93", part:"Phần II", chapter:"Chương 3", q:"Câu 93: Nhận xét nào sau đây phản ánh đúng nhất về sản xuất giá trị thặng dư trong chủ nghĩa tư bản ngày nay?", opts:["A. Giá trị thặng dư không còn đóng vai trò trung tâm trong sản xuất hiện đại","B. Máy móc hiện đại làm giảm vai trò của lao động sống và khiến giá trị thặng dư giảm dần","C. Tỷ suất giá trị thặng dư ngày càng tăng lên nhờ áp dụng công nghệ cao","D. Giá trị thặng dư chỉ còn tồn tại trong lĩnh vực sản xuất vật chất"], ans:2 },
+
+      // ===== PHẦN II - CHƯƠNG 4 =====
+      { id:"II4-C3", part:"Phần II", chapter:"Chương 4", q:"Câu 3: Hình thức đầu tiên của tổ chức độc quyền là:", opts:["A. Xanh-đi-ca","B. Các-ten","C. Công-xoóc-xi-om","D. Tờ-rớt"], ans:1 },
+      { id:"II4-C4", part:"Phần II", chapter:"Chương 4", q:"Câu 4: Sự phân chia lãnh thổ giữa các cường quốc tư bản độc quyền nhằm:", opts:["A. Để giành giật thị trường, nguồn nguyên liệu, nơi đầu tư","B. Để hợp tác kinh tế","C. Để bảo vệ môi trường","D. Để tránh chiến tranh"], ans:0 },
+      { id:"II4-C17", part:"Phần II", chapter:"Chương 4", q:"Câu 17: Tờ-rớt là hình thức tổ chức độc quyền có đặc điểm:", opts:["A. Tự nguyện","B. Không chính thức","C. Sáp nhập doanh nghiệp, mất tư cách pháp nhân riêng","D. Mềm dẻo"], ans:2 },
+      { id:"II4-C20", part:"Phần II", chapter:"Chương 4", q:"Câu 20: Giá cả độc quyền là giá cả:", opts:["A. Luôn bằng giá trị","B. Luôn thấp hơn giá trị","C. Luôn cao hơn giá trị","D. Được hình thành do độc quyền và thường cao hơn giá trị"], ans:3 },
+      { id:"II4-C30", part:"Phần II", chapter:"Chương 4", q:"Câu 30: Lợi nhuận độc quyền là lợi nhuận thu được?", opts:["A. Do cạnh tranh tự do","B. Từ hoạt động xuất khẩu","C. Cao hơn lợi nhuận bình quân do vị thế độc quyền","D. Chỉ từ sản xuất nông nghiệp"], ans:2 },
+      { id:"II4-C33", part:"Phần II", chapter:"Chương 4", q:"Câu 33: Độc quyền tư bản chủ nghĩa là:", opts:["A. Kinh tế nông nghiệp là chủ yếu","B. Giai đoạn tư bản tập trung cao độ, hình thành các tổ chức độc quyền chi phối kinh tế","C. Kinh tế nhà nước quản lý toàn phần","D. Kinh tế tự do cạnh tranh hoàn toàn"], ans:1 },
+      { id:"II4-C46", part:"Phần II", chapter:"Chương 4", q:"Câu 46: Độc quyền xuất hiện trong nền kinh tế thị trường tư bản chủ nghĩa vào khoảng:", opts:["A. Giữa thế kỷ 20","B. Cuối thế kỷ 19 – đầu thế kỷ 20","C. Thế kỷ 16","D. Đầu thế kỷ 18"], ans:1 },
+      { id:"II4-C48", part:"Phần II", chapter:"Chương 4", q:"Câu 48: Xuất khẩu tư bản trở thành tất yếu vào cuối thế kỷ XIX đầu thế kỷ XX nhằm mục đích:", opts:["A. Giúp các nước nghèo phát triển","B. Nâng cao trình độ khoa học","C. Tăng cường giao lưu văn hóa","D. Giải quyết vấn đề thừa tư bản và tìm kiếm lợi nhuận siêu ngạch"], ans:3 },
+      { id:"II4-C55", part:"Phần II", chapter:"Chương 4", q:"Câu 55: Hình thức xuất khẩu tư bản chủ yếu hiện nay là gì?", opts:["A. Viện trợ phát triển","B. Xuất khẩu lao động","C. Xuất khẩu hàng hóa","D. Đầu tư trực tiếp nước ngoài"], ans:3 },
+      { id:"II4-C59", part:"Phần II", chapter:"Chương 4", q:"Câu 59: Tư bản tài chính là sự hợp nhất giữa:", opts:["A. Tư bản quốc gia và tư bản nước ngoài","B. Tư bản cố định và tư bản lưu động","C. Tư bản ngân hàng và tư bản công nghiệp","D. Tư bản công nghiệp và tư bản thương nghiệp"], ans:2 },
+      { id:"II4-C68", part:"Phần II", chapter:"Chương 4", q:"Câu 68: Tập đoàn độc quyền Con-xoóc-xi-om là tổ chức:", opts:["A. Nhóm các nhà khoa học","B. Kết hợp nhiều công ty khác lĩnh vực thành một khối dưới sự chi phối tài chính chung","C. Tập thể nhà nước","D. Các hợp tác xã liên kết"], ans:1 },
+      { id:"II4-C69", part:"Phần II", chapter:"Chương 4", q:"Câu 69: Đặc điểm nổi bật nhất của độc quyền tư bản chủ nghĩa là gì?", opts:["A. Mở rộng quyền sở hữu công nhân đối với tư liệu sản xuất","B. Tự do cạnh tranh giữa các doanh nghiệp vừa và nhỏ","C. Sản xuất hàng hóa nhỏ lẻ theo đơn đặt hàng","D. Tập trung sản xuất và tư bản ở quy mô lớn dẫn đến hình thành các tổ chức độc quyền"], ans:3 },
+      { id:"II4-C80", part:"Phần II", chapter:"Chương 4", q:"Câu 80: Trong hình thức độc quyền Các-ten, các doanh nghiệp:", opts:["A. Sáp nhập toàn bộ","B. Không có ràng buộc","C. Liên kết thỏa thuận về giá cả, thị trường nhưng vẫn độc lập","D. Cạnh tranh hoàn toàn"], ans:2 },
+      { id:"II4-C90", part:"Phần II", chapter:"Chương 4", q:"Câu 90: Nguồn gốc chủ yếu của lợi nhuận độc quyền cao trong chủ nghĩa tư bản là gì?", opts:["A. Lợi nhuận do đổi mới công nghệ tạo ra trong nội bộ các tập đoàn độc quyền","B. Lợi tức do đầu tư tài chính xuyên biên giới","C. Tranh lệch tỷ giá và chi phí đầu vào","D. Chiếm đoạt giá trị thặng dư từ các doanh nghiệp tư bản vừa và nhỏ nằm ngoài độc quyền"], ans:3 },
+      { id:"II4-C91", part:"Phần II", chapter:"Chương 4", q:"Câu 91: Nguyên nhân trực tiếp dẫn đến hình thành tổ chức độc quyền là do:", opts:["A. Nhu cầu tiêu dùng tăng","B. Chính sách hỗ trợ của nhà nước","C. Khủng hoảng kinh tế","D. Sự phát triển của lực lượng sản xuất và cạnh tranh gay gắt"], ans:3 },
+
+      // ===== PHẦN II - CHƯƠNG 5+6 =====
+      { id:"II56-C1", part:"Phần II", chapter:"Chương 5+6", q:"Câu 1: Chọn đáp án sai về nội dung: “Sẵn sàng thích ứng với tác động của bối cảnh cuộc Cách mạng công nghiệp lần thứ tư”?", opts:["A. Nắm bắt và đẩy mạnh việc ứng dụng những thành tựu của cách mạng công nghiệp lần thứ tư.","B. Hoàn thiện thể chế, xây dựng nền kinh tế dựa trên nền tảng đổi mới, sáng tạo.","C. Cho phép ứng dụng những thành tựu khoa học - công nghệ mới, hiện đại vào các ngành, các vùng và các lĩnh vực của nền kinh tế.","D. Chuẩn bị các điều kiện cần thiết để ứng phó với những tác động tiêu cực của Cách mạng công nghiệp lần thứ tư."], ans:2 },
+      { id:"II56-C6", part:"Phần II", chapter:"Chương 5+6", q:"Câu 6: Chọn đáp án sai về vai trò của cách mạng công nghiệp lần thứ nhất đối với sự phát triển của Chủ nghĩa tư bản?", opts:["A. Củng cố, hoàn thiện quan hệ sản xuất tư bản chủ nghĩa.","B. Quyết định sự thống trị của chủ nghĩa tư bản.","C. Chuyển biến từ sản xuất nhỏ, thủ công, phân tán lên sản xuất lớn, tập trung, hiện đại.","D. Nâng cao năng suất lao động xã hội."], ans:1 },
+      { id:"II56-C8", part:"Phần II", chapter:"Chương 5+6", q:"Câu 8: Đường lối công nghiệp hóa ở nước ta lần đầu tiên được đề ra ở Đại hội nào của Đảng?", opts:["A. Đại hội III","B. Đại hội VI","C. Đại hội IV","D. Đại hội V"], ans:0 },
+      { id:"II56-C15", part:"Phần II", chapter:"Chương 5+6", q:"Câu 15: Chọn đáp án đúng nhất về vai trò của cách mạng công nghiệp đối với thúc đẩy đổi mới phương thức quản trị phát triển của doanh nghiệp:", opts:["A. Các doanh nghiệp cần phải xây dựng chiến lược kinh doanh từ nguồn lực công nghệ, trí tuệ, đổi mới, sáng tạo.","B. Các doanh nghiệp cần phải xây dựng chiến lược kinh doanh xuất phát từ nguồn lực, trong đó, nguồn lực chủ yếu là công nghệ, trí tuệ, đổi mới, sáng tạo.","C. Các doanh nghiệp cần phải xây dựng chiến lược trong đó, nguồn lực chủ yếu là công nghệ, trí tuệ, đổi mới, sáng tạo.","D. Các doanh nghiệp cần phải xuất phát từ nguồn lực, trong đó, nguồn lực chủ yếu là công nghệ, trí tuệ, đổi mới, sáng tạo."], ans:1 },
+      { id:"II56-C24", part:"Phần II", chapter:"Chương 5+6", q:"Câu 24: Chọn đáp án đúng về vai trò của cách mạng công nghiệp đối với thúc đẩy đổi mới phương thức quản trị phát triển của chính phủ:", opts:["A. Việc quản lý quá trình sản xuất của các doanh nghiệp trở lên dễ dàng hơn thông qua ứng dụng các công nghệ như internet.","B. Phương thức quản trị, điều hành của chính phủ cũng có sự thay đổi nhanh chóng để thích ứng với sự phát triển của công nghệ mới, hình thành hệ thống tin học hóa trong quản lý và “chính phủ điện tử”.","C. Tạo cơ hội cho các nước phát triển nhiều ngành kinh tế và những ngành mới thông qua ứng dụng những thành tựu về công nghệ thông tin.","D. Chuyển biến từ sản xuất nhỏ, thủ công, phân tán lên sản xuất lớn, tập trung, hiện đại."], ans:1 },
+      { id:"II56-C28", part:"Phần II", chapter:"Chương 5+6", q:"Câu 28: Trong KTTTĐH XHCN ở Việt Nam, vai trò chủ đạo của kinh tế nhà nước thể hiện rõ nhất thông qua việc nào sau đây?", opts:["A. Khu vực kinh tế nhà nước đảm bảo các cân đối lớn, chi phối các lĩnh vực then chốt, và thúc đẩy phát triển hệ thống an sinh xã hội.","B. Các doanh nghiệp nhà nước đóng góp nhiều nhất cho ngân sách nhà nước","C. Khu vực kinh tế nhà nước kiểm soát hoàn toàn lĩnh vực ngân hàng và tài chính.","D. Kinh tế nhà nước chiếm tỷ trọng lớn nhất trong GDP."], ans:0 },
+      { id:"II56-C29", part:"Phần II", chapter:"Chương 5+6", q:"Câu 29: Đâu là động lực của công nghiệp hoá, hiện đại hoá?", opts:["A. Khoa học - công nghệ","B. Con người","C. Mở rộng quan hệ kinh tế quốc tế","D. Hiệu quả kinh tế - xã hội"], ans:1 },
+      { id:"II56-C35", part:"Phần II", chapter:"Chương 5+6", q:"Câu 35: Tính 'định hướng xã hội chủ nghĩa' của Kinh tế thị trường ở Việt Nam được bảo đảm bằng yếu tố nào là chủ yếu?", opts:["A. Mọi thành phần kinh tế đều được khuyến khích phát triển.","B. Sự ưu tiên tuyệt đối cho khu vực kinh tế tập thể.","C. Tỷ trọng GDP của khu vực kinh tế nhà nước luôn phải đạt trên 50%","D. Sự lãnh đạo của Đảng Cộng sản Việt Nam và vai trò quản lý, điều tiết của Nhà nước xã hội chủ nghĩa."], ans:3 },
+      { id:"II56-C36", part:"Phần II", chapter:"Chương 5+6", q:"Câu 36: Chọn đáp án đúng nhất: Lý do khách quan Việt Nam phải thực hiện công nghiệp hoá, hiện đại hoá:", opts:["A. Lý luận và thực tiễn cho thấy, công nghiệp hoá là quy luật phổ biến của sự phát triển lực lượng sản xuất xã hội","B. Công nghiệp hoá là quy luật của sự phát triển lực lượng sản xuất xã hội mà mọi quốc gia đều trải qua dù ở các quốc gia phát triển sớm hay các quốc gia đi sau","C. Lý luận và thực tiễn cho thấy, công nghiệp hoá là quy luật mà mọi quốc gia đều trải qua dù ở các quốc gia phát triển sớm hay các quốc gia đi sau","D. Lý luận và thực tiễn cho thấy, công nghiệp hoá là quy luật phổ biến của sự phát triển lực lượng sản xuất xã hội mà mọi quốc gia đều trải qua dù ở các quốc gia phát triển sớm hay các quốc gia đi sau"], ans:0 },
+      { id:"II56-C37", part:"Phần II", chapter:"Chương 5+6", q:"Câu 37: Chọn đáp án sai về vai trò của cách mạng công nghiệp đối với thúc đẩy lực lượng sản xuất:", opts:["A. Việc quản lý quá trình sản xuất của các doanh nghiệp trở lên dễ dàng hơn thông qua ứng dụng các công nghệ như internet.","B. Về đối tượng lao động, đưa sản xuất của con người vượt quá giới hạn về tài nguyên thiên nhiên cũng như sự phụ thuộc của sản xuất và nguồn năng lượng truyền thống.","C. Về tư liệu lao động, máy móc ra đời thay thế cho lao động thủ công.","D. Về người lao động, tạo điều kiện thúc đẩy phát triển nguồn nhân lực."], ans:0 },
+      { id:"II56-C38", part:"Phần II", chapter:"Chương 5+6", q:"Câu 38: Tính 'phát triển bền vững' trong KTTTĐH XHCN ở Việt Nam được hiểu là sự kết hợp hài hòa của các trụ cột nào?", opts:["A. Tăng cường hợp tác quốc tế, mở rộng thị trường xuất khẩu và thu hút đầu tư nước ngoài","B. Tăng trưởng kinh tế và đảm bảo an ninh quốc phòng","C. Ưu tiên phát triển công nghiệp nặng và dịch vụ.","D. Kinh tế tăng trưởng ổn định, xã hội công bằng và môi trường được bảo vệ."], ans:3 },
+      { id:"II56-C41", part:"Phần II", chapter:"Chương 5+6", q:"Câu 41: Một trong những thách thức của việc xây dựng kinh tế thị trường định hướng XHCN là?", opts:["A. Tăng trưởng kinh tế quá nhanh","B. Thiếu tính cạnh tranh","C. Xử lý mối quan hệ giữa thị trường và nhà nước, tăng trưởng và công bằng xã hội","D. Tình trạng lạm phát cao"], ans:2 },
+      { id:"II56-C47", part:"Phần II", chapter:"Chương 5+6", q:"Câu 47: Chọn đáp án sai trong số các đáp án về thực hiện các nhiệm vụ để chuyển đổi nền sản xuất – xã hội lạc hậu sang nền sản xuất – xã hội hiện đại:", opts:["A. Đẩy mạnh ứng dụng những thành tựu của khoa học - công nghệ mới, hiện đại.","B. Công nghiệp hoá, hiện đại hoá gắn với phát triển kinh tế tri thức.","C. Từng bước hoàn thiện quan hệ sản xuất phù hợp với trình độ phát triển của lực lượng sản xuất.","D. Chuyển dịch cơ cấu kinh tế theo hướng hiện đại, hợp lý và hiệu quả."], ans:2 },
+      { id:"II56-C50", part:"Phần II", chapter:"Chương 5+6", q:"Câu 50: Chọn đáp án sai về đặc điểm của công nghiệp hoá, hiện đại hoá ở Việt Nam?", opts:["A. Công nghiệp hoá, hiện đại hoá theo định hướng xã hội chủ nghĩa, thực hiện mục tiêu dân giàu, nước mạnh, dân chủ, công bằng, văn minh.","B. Đẩy mạnh ứng dụng những thành tựu của khoa học – công nghệ mới, hiện đại.","C. Công nghiệp hoá, hiện đại hoá trong điều kiện nền kinh tế thị trường định hướng xã hội chủ nghĩa.","D. Công nghiệp hoá, hiện đại hoá gắn với phát triển kinh tế tri thức."], ans:1 },
+      { id:"II56-C51", part:"Phần II", chapter:"Chương 5+6", q:"Câu 51: Đáp án nào là định nghĩa đúng về nền kinh tế tri thức?", opts:["A. Nền kinh tế tri thức là nền kinh tế trong đó sự sản sinh ra, phổ cập và sử dụng tri thức giữ vai trò quyết định nhất đối với sự phát triển kinh tế, tạo ra của cải, nâng cao chất lượng cuộc sống.","B. Nền kinh tế tri thức là nền kinh tế trong đó tri thức giữ vai trò quyết định nhất đối với sự phát triển kinh tế, tạo ra của cải, nâng cao chất lượng cuộc sống.","C. Nền kinh tế tri thức là nền kinh tế trong đó sự phổ cập và sử dụng tri thức giữ vai trò quyết định nhất đối với sự phát triển kinh tế, tạo ra của cải, nâng cao chất lượng cuộc sống.","D. Nền kinh tế tri thức là nền kinh tế trong đó sự sản sinh và sử dụng tri thức giữ vai trò quyết định đối với sự phát triển kinh tế, tạo ra của cải, nâng cao chất lượng cuộc sống."], ans:0 },
+      { id:"II56-C52", part:"Phần II", chapter:"Chương 5+6", q:"Câu 52: Yếu tố nào là mục tiêu lâu dài để phân biệt nền kinh tế Việt Nam với kinh tế thị trường tư bản chủ nghĩa?", opts:["A. Tốc độ tăng trưởng GDP hàng năm","B. Mục tiêu hướng tới: 'Dân giàu, nước mạnh, dân chủ, công bằng, văn minh'.","C. Tốc độ tăng trường của xuất khẩu hàng năm","D. Số lượng các doanh nghiệp tư nhân hoạt động trên thị trường."], ans:1 },
+      { id:"II56-C56", part:"Phần II", chapter:"Chương 5+6", q:"Câu 56: Sự lãnh đạo của Đảng Cộng sản Việt Nam đối với nền kinh tế có tác dụng?", opts:["A. Đảm bảo định hướng XHCN cho sự phát triển kinh tế thị trường","B. Đảm bảo an ninh quốc gia và an toàn kinh tế","C. Đảm bảo tăng trường kinh tế nhanh","D. Bảo vệ độc quyền nhà nước về kinh tế"], ans:0 },
+      { id:"II56-C62", part:"Phần II", chapter:"Chương 5+6", q:"Câu 62: Tính tất yếu khách quan của việc phát triển kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam được giải thích chủ yếu dựa trên cơ sở nào?", opts:["A. Sự cần thiết phải xóa bỏ hoàn toàn khu vực kinh tế tư nhân để kinh tế nhà nước giữ vai trò tuyệt đối.","B. Yêu cầu của hội nhập kinh tế quốc tế và tuân thủ các cam kết thương mại trong hội nhập kinh tế quốc tế","C. Kinh nghiệm thành công của các nước xã hội chủ nghĩa khác đã chuyển đổi sang kinh tế thị trường.","D. Sự thống nhất giữa tính phổ biến của kinh tế thị trường và các nguyên tắc, mục tiêu cơ bản của chủ nghĩa xã hội."], ans:3 },
+      { id:"II56-C64", part:"Phần II", chapter:"Chương 5+6", q:"Câu 64: Lý do khách quan nào sau đây là quan trọng nhất cho việc áp dụng kinh tế thị trường định hướng xã hội chủ nghĩa tại Việt Nam", opts:["A. Mục tiêu đẩy nhanh tốc độ công nghiệp hóa, hiện đại hóa.","B. Nhu cầu đẩy mạnh cải cách và mở cửa kinh tế","C. Mục tiêu nâng cao hiệu quả hoạt động của khu vực kinh tế nhà nước","D. Xu hướng phát triển khách quan của Việt Nam trong bối cảnh thế giới hiện nay"], ans:3 },
+      { id:"II56-C65", part:"Phần II", chapter:"Chương 5+6", q:"Câu 65: Đâu là tiêu chuẩn cơ bản để xác định phương án phát triển, lựa chọn dự án đầu tư và công nghệ trong quá trình công nghiệp hoá, hiện đại hoá?", opts:["A. Tăng năng suất lao động","B. Hiệu quả kinh tế - xã hội","C. Nâng cao đời sống nhân dân.","D. Kết hợp kinh tế với an ninh, quốc phòng"], ans:1 },
+      { id:"II56-C66", part:"Phần II", chapter:"Chương 5+6", q:"Câu 66: Trong thời kỳ quá độ ở nước ta tồn tại nhiều nguyên tắc phân phối vì trong thời kỳ quá độ còn:", opts:["A. Nhiều hình thức sở hữu tư liệu sản xuất","B. Nhiều hình thức sở hữu, nhiều thành phần kinh tế","C. Nhiều hình thức kinh doanh","D. Nhiều thành phần kinh tế"], ans:1 },
+      { id:"II56-C67", part:"Phần II", chapter:"Chương 5+6", q:"Câu 67: Sự khác biệt cơ bản giữa kinh tế thị trường định hướng xã hội chủ nghĩa với kinh tế thị trường tư bản chủ nghĩa là:", opts:["A. Hình thức phân phối thu nhập","B. Vai trò của kinh tế nhà nước","C. Hình thức sở hữu tư liệu sản xuất","D. Vai trò của nhà nước và mục tiêu phát triển"], ans:3 },
+      { id:"II56-C70", part:"Phần II", chapter:"Chương 5+6", q:"Câu 70: Các hình thức sở hữu tư liệu sản xuất hiện nay tại Việt Nam bao gồm:", opts:["A. Sở hữu nhà nước, sở hữu hợp tác, sở hữu tập thể","B. Sở hữu toàn dân, sở hữu riêng, sở hữu chung","C. Sở hữu nhà nước, sở hữu tư nhân, sở hữu của tổ chức chính trị - xã hội","D. Sở hữu toàn dân, sở hữu tư nhân, sở hữu hỗn hợp"], ans:3 },
+      { id:"II56-C73", part:"Phần II", chapter:"Chương 5+6", q:"Câu 73: Hình thức phân phối thu nhập nào phản ánh định hướng xã hội chủ nghĩa của nền kinh tế thị trường:", opts:["A. Phân phối theo nhu cầu","B. Phân phối theo vốn và tài sản","C. Phân phối theo lao động và hiệu quả kinh tế, phân phối theo phúc lợi xã hội","D. Phân phối lại theo các chính sách của nhà nước"], ans:2 },
+      { id:"II56-C74", part:"Phần II", chapter:"Chương 5+6", q:"Câu 74: Chọn đáp án đúng: Cho đến nay lịch sử loài người đã và đang trải qua mấy cuộc cách mạng công nghiệp?", opts:["A. 4","B. 3","C. 1","D. 2"], ans:0 },
+      { id:"II56-C75", part:"Phần II", chapter:"Chương 5+6", q:"Câu 75: Quan hệ nào sau đây có vai trò quyết định đến quan hệ phân phối?", opts:["A. Quan hệ xã hội, đạo đức","B. Quan hệ phân công lao động","C. Quan hệ tổ chức quản lý","D. Quan hệ sở hữu tư liệu sản xuất"], ans:3 },
+      { id:"II56-C76", part:"Phần II", chapter:"Chương 5+6", q:"Câu 76: Chọn đáp án sai về đặc điểm của kinh tế tri thức:", opts:["A. Các ngành kinh tế đựa vào tri thức, dựa vào các thành tựu mới nhất của khoa học – công nghệ ngày càng chiếm đa số.","B. Cơ cấu kinh tế cho phép khai thác, phân bổ và phát huy hiệu quả các nguồn lực trong nước, thu hút có hiệu quả các nguồn lực bên ngoài","C. Tri thức trở thành lực lượng sản xuất trực tiếp, là vốn quý nhất, là nguốn lực quan trọng hàng đầu.","D. Công nghệ thông tin được ứng dụng rộng rãi trong mọi lĩnh vực và thiết lập mạng thông tin đa phương tiện phủ khắp cả nước."], ans:1 },
+      { id:"II56-C78", part:"Phần II", chapter:"Chương 5+6", q:"Câu 78: Mục tiêu chiến lược của Việt Nam đến giữa thế kỷ XXI là gì?", opts:["A. Trở thành nước phát triển, theo định hướng XHCN","B. Trở thành nước phát triển, theo định hướng TBCN","C. Trở thành nước phát triển có thu nhập trung bình cao","D. Trở thành cường quốc công nghiệp"], ans:0 },
+      { id:"II56-C79", part:"Phần II", chapter:"Chương 5+6", q:"Câu 79: Chọn đáp án sai về vai trò của cách mạng công nghiệp lần thứ hai đối với sự phát triển của Chủ nghĩa tư bản?", opts:["A. Nâng cao năng suất lao động xã hội.","B. Chuyển nền sản xuất cơ khí sang nền sản xuất điện – cơ khí và sang giai đoạn tự động hoá cục bộ trong sản xuất.","C. Phân công lao động, chuyên môn hoá sản xuất được ứng dụng rộng dãi trong các doanh nghiệp.","D. Chuyển nền sản xuất cơ khí sang nền sản xuất tự động hoá toàn diện các khâu của sản xuất."], ans:3 },
+      { id:"II56-C81", part:"Phần II", chapter:"Chương 5+6", q:"Câu 81: Chọn đáp án đúng về chuẩn bị các điều kiện cần thiết để ứng phó với những tác động tiêu cực của Cách mạng công nghiệp lần thứ tư:", opts:["A. Các ngành kinh tế đựa vào tri thức, dựa vào các thành tựu mới nhất của khoa học – công nghệ ngày càng chiếm đa số.","B. Hoàn thiện thể chế, xây dựng nền kinh tế dựa trên nền tảng đổi mới, sáng tạo.","C. Công nghiệp hoá, hiện đại hoá gắn với phát triển kinh tế tri thức.","D. Đẩy mạnh công nghiệp hoá, hiện đại hoá nông nghiệp, nông thôn"], ans:1 },
+      { id:"II56-C82", part:"Phần II", chapter:"Chương 5+6", q:"Câu 82: Nước nào tiến hành công nghiệp hóa đầu tiên trên thế giới?", opts:["A. Anh","B. Pháp","C. Đức","D. Mỹ"], ans:0 },
+      { id:"II56-C83", part:"Phần II", chapter:"Chương 5+6", q:"Câu 83: Chủ trương \"đẩy mạnh công nghiệp hóa, hiện đại hóa đất nước\" được đề ra ở Đại hội nào của Đảng ta?", opts:["A. Đại hội IX","B. Đại hội VIII","C. Đại hội VI","D. Đại hội VII"], ans:1 },
+      { id:"II56-C84", part:"Phần II", chapter:"Chương 5+6", q:"Câu 84: Nền kinh tế thị trường định hướng xã hội chủ nghĩa là mô hình tổng quát của?", opts:["A. Chủ nghĩa xã hội","B. Giai đoạn kinh tế tự cung tự cấp","C. Thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam","D. Chủ nghĩa tư bản hiện đại"], ans:2 },
+      { id:"II56-C85", part:"Phần II", chapter:"Chương 5+6", q:"Câu 85: Tính chất \"định hướng xã hội chủ nghĩa\" của kinh tế thị trường Việt Nam thể hiện qua việc?", opts:["A. Xóa bỏ tư hữu về tư liệu sản xuất","B. Từ bỏ các quy luật kinh tế thị trường","C. Thực hiện mục tiêu dân giàu, nước mạnh, dân chủ, công bằng, văn minh","D. Thực hiện chính sách kinh tế kế hoạch hóa tập trung"], ans:2 },
+      { id:"II56-C86", part:"Phần II", chapter:"Chương 5+6", q:"Câu 86: Công cụ điều tiết chủ yếu của nhà nước đối với nền kinh tế thị trường định hướng xã hội chủ nghĩa là?", opts:["A. Chính sách phúc lợi xã hội","B. Luật pháp, chiến lược, quy hoạch, kế hoạch, chính sách kinh tế","C. Công cụ kế hoạch hóa","D. Chính sách tài khóa và chính sách tiền tệ"], ans:1 },
+      { id:"II56-C92", part:"Phần II", chapter:"Chương 5+6", q:"Câu 92: Mô hình kinh tế khái quát trong thời kỳ quá độ lên chủ nghĩa xã hội ở nước ta là:", opts:["A. Kinh tế thị trường định hướng xã hội chủ nghĩa","B. Kinh tế kế hoạch hóa tập trung","C. Kinh tế thị trường tự do","D. Kinh tế thị trường xã hội"], ans:0 },
+      { id:"II56-C95", part:"Phần II", chapter:"Chương 5+6", q:"Câu 95: Chọn đáp án sai về vai trò của cách mạng công nghiệp đối với việc thúc đẩy quan hệ sản xuất?", opts:["A. Buộc các nước phải điều chỉnh chế độ sở hữu, thực hiện đa dạng hoá các hình thức sở hữu, lấy sở hữu tư nhân làm nòng cốt, phát huy tối đa sức mạnh và ưu thế của sở hữu nhà nước","B. Tạo cơ hội cho các nước phát triển nhiều ngành kinh tế và những ngành mới thông qua ứng dụng những thành tựu về công nghệ thông tin","C. Việc quản lý quá trình sản xuất của các doanh nghiệp trở lên dễ dàng hơn thông qua ứng dụng các công nghệ như internet","D. Giúp cho việc phân phối và tiêu dùng trở nên dễ dàng và nhanh chóng, thay đổi đời sống của con người"], ans:1 },
+      { id:"II56-C96", part:"Phần II", chapter:"Chương 5+6", q:"Câu 96: Việc phát triển kinh tế gắn với bảo vệ môi trường là một yêu cầu của?", opts:["A. Tăng trưởng kinh tế nóng","B. Phát triển ngắn hạn","C. Phát triển bền vững","D. Tăng trưởng kinh tế theo chiều rộng"], ans:2 },
+      { id:"II56-C97", part:"Phần II", chapter:"Chương 5+6", q:"Câu 97: Chọn đáp án đúng nhất: Nội dung tạo lập điều kiện để có thể chuyển đổi từ nền sản xuất - xã hội lạc hậu sang nền sản xuất - xã hội tiến bộ:", opts:["A. Các điều kiện chủ yếu cần có như: tư duy phát triển; môi trường quốc tế thuận lợi và trình độ văn minh của xã hội","B. Các điều kiện chủ yếu cần có như: thể chế và nguồn lực; môi trường quốc tế thuận lợi, ý thức xây dựng xã hội văn minh của người dân","C. Các điều kiện chủ yếu cần có như: tư duy phát triển; thể chế và nguồn lực; môi trường quốc tế thuận lợi và trình độ văn minh của xã hội, ý thức xây dựng xã hội văn minh của người dân","D. Các điều kiện chủ yếu cần có như: tư duy phát triển; môi trường quốc tế thuận lợi và trình độ văn minh của xã hội, ý thức xây dựng xã hội văn minh của người dân"], ans:2 },
+      { id:"II56-C98", part:"Phần II", chapter:"Chương 5+6", q:"Câu 98: Hãy chọn câu trả lời đúng nhất trong các câu dưới đây: Ở nước ta hiện nay tồn tại nhiều hình thức phân phối thu nhập vì:", opts:["A. Do sự khác nhau về trình độ của lực lượng sản xuất","B. Còn tồn tại nhiều thành phần kinh tế và hình thức tổ chức sản xuất kinh doanh","C. Còn tồn tại nhiều kiểu quan hệ sản xuất khác nhau","D. Còn tồn tại nhiều hình thức sở hữu tư liệu sản xuất"], ans:3 },
+      { id:"II56-C101", part:"Phần II", chapter:"Chương 5+6", q:"Câu 101: Nội dung của hội nhập kinh tế quốc tế ở nước ta là:", opts:["A. thực hiện các hình thức, các mức độ hội nhập kinh tế quốc tế và phát huy nội lực.","B. đa phương hoá các quan hệ đối ngoại và thực hiện các hình thức, các mức độ hội nhập kinh tế quốc tế","C. chuẩn bị các điều kiện để thực hiện hội nhập hiệu quả, thành công và thực hiện đa phương hoá các quan hệ đối ngoại","D. chuẩn bị các điều kiện để thực hiện hội nhập hiệu quả, thành công và thực hiện đa dạng các hình thức, các mức độ hội nhập kinh tế quốc tế."], ans:3 },
+
+      // ===== PHẦN III - CHƯƠNG 1 =====
+      { id:"III1-C12", part:"Phần III", chapter:"Chương 1", q:"Câu 12: Trong tác phẩm \"Tư bản\" của C. Mác, lý luận nào là cốt lõi?", opts:["A. Cung – cầu","B. Cạnh tranh","C. Giá trị thặng dư","D. Giá trị lao động"], ans:2 },
+      { id:"III1-C52", part:"Phần III", chapter:"Chương 1", q:"Câu 52: Quy luật kinh tế là gì?", opts:["A. Quy định của Nhà nước","B. Mối liên hệ khách quan, lặp đi lặp lại của các hiện tượng và quá trình kinh tế","C. Thể chế kinh tế","D. Chính sách kinh tế"], ans:1 },
+      { id:"III1-C54", part:"Phần III", chapter:"Chương 1", q:"Câu 54: Chức năng thực tiễn của kinh tế chính trị Mác – Lênin là:", opts:["A. Vận dụng quy luật kinh tế vào phát triển kinh tế - xã hội","B. Phân tích văn hóa tiêu dùng","C. Xây dựng chiến lược marketing","D. Tăng giá trị xuất khẩu"], ans:0 },
+      { id:"III1-C75", part:"Phần III", chapter:"Chương 1", q:"Câu 75: Chức năng tư tưởng của kinh tế chính trị Mác - Lênin là:", opts:["A. Xây dựng lý tưởng khoa học nhằm xây dựng chế độ xã hội tốt đẹp, hướng tới giải phóng con người, xóa bỏ áp bức, bất công","B. Định hướng tư tưởng cho các tổ chức kinh tế","C. Vận dụng quy luật kinh tế vào phát triển kinh tế - xã hội","D. Tuyên truyền các chính sách kinh tế của Nhà nước"], ans:0 },
+      { id:"III1-C77", part:"Phần III", chapter:"Chương 1", q:"Câu 77: Mục đích nghiên cứu cao nhất của kinh tế chính trị Mác – Lênin là gì?", opts:["A. Thúc đẩy tiêu dùng","B. Tăng trưởng kinh tế nhanh","C. Tăng hiệu quả của chính sách tài khóa","D. Phát hiện ra các quy luật chi phối quan hệ giữa người với người trong sản xuất và trao đổi"], ans:3 },
+      { id:"III1-C92", part:"Phần III", chapter:"Chương 1", q:"Câu 92: Chức năng nhận thức của kinh tế chính trị Mác – Lênin là gì?", opts:["A. Hiểu bản chất và quy luật của các quan hệ kinh tế","B. Tổ chức bộ máy sản xuất kinh doanh","C. Thúc đẩy đầu tư","D. Tạo ra của cải vật chất"], ans:0 },
+
+      // ===== PHẦN III - CHƯƠNG 2 =====
+      { id:"III2-C3", part:"Phần III", chapter:"Chương 2", q:"Câu 3: Theo quy luật lưu thông tiền tệ, lượng tiền giấy được phát hành và đưa vào lưu thông phải căn cứ vào:", opts:["A. Lượng tiền cần thiết cho lưu thông trong một thời kỳ nhất định","B. Chính sách tiền lương","C. Tổng chi ngân sách nhà nước trong một năm","D. Chính sách đầu tư công"], ans:0 },
+      { id:"III2-C9", part:"Phần III", chapter:"Chương 2", q:"Câu 9: Khi một ngành có giá cả hàng hóa tăng và cao hơn giá trị sẽ dẫn đến hiện tượng:", opts:["A. Các doanh nghiệp có xu hướng liên kết để tạo ra quyền lực độc quyền","B. Các doanh nghiệp giảm chi tiêu cho thay đổi công nghệ","C. Các doanh nghiệp ồ ạt rút lui khỏi ngành","D. Các doanh nghiệp mới gia nhập vào ngành tăng"], ans:3 },
+      { id:"III2-C11", part:"Phần III", chapter:"Chương 2", q:"Câu 11: Khi giá cả hàng hóa tăng, lượng cung sẽ có xu hướng:", opts:["A. Không thay đổi","B. Tăng hoặc giảm tùy thuộc vào loại hàng hóa","C. Tăng","D. Giảm"], ans:2 },
+      { id:"III2-C14", part:"Phần III", chapter:"Chương 2", q:"Câu 14: Vai trò của cạnh tranh trong nền kinh tế thị trường là:", opts:["A. Phân hóa xã hội","B. Đảm bảo giá cả thị trường ổn định","C. Thúc đẩy nâng cao hiệu quả sản xuất kinh doanh, phát triển lực lượng sản xuất","D. Tạo ra tình trạng khan hiếm hàng hóa, dịch vụ"], ans:2 },
+      { id:"III2-C15", part:"Phần III", chapter:"Chương 2", q:"Câu 15: Theo yêu cầu của Quy luật giá trị, người sản xuất phải:", opts:["A. Tăng giá trị cá biệt luôn lớn hơn hoặc bằng giá trị thị trường của hàng hóa","B. Giảm số lượng lao động tri thức, tăng số lượng lao động giản đơn","C. Giảm giá trị cá biệt xuống nhỏ hơn hoặc bằng giá trị thị trường của hàng hóa","D. Giảm sản lượng nhằm tác động lên tổng cung hàng hóa trên thị trường"], ans:2 },
+      { id:"III2-C22", part:"Phần III", chapter:"Chương 2", q:"Câu 22: Vai trò nào sau đây của nhà nước trong nền kinh tế thị trường là quan trọng nhất?", opts:["A. Cung cấp hàng hóa và dịch vụ công cộng","B. Tạo ra lợi nhuận tối đa cho các doanh nghiệp nhà nước","C. Điều tiết thị trường, khắc phục các khuyết tật của kinh tế thị trường và đảm bảo công bằng xã hội","D. Quản lý giá cả"], ans:2 },
+      { id:"III2-C24", part:"Phần III", chapter:"Chương 2", q:"Câu 24: Mục tiêu cơ bản của người sản xuất trong nền kinh tế thị trường là?", opts:["A. Tối đa hóa lợi nhuận","B. Tối đa hóa tỷ suất lợi nhuận","C. Tăng khả năng cạnh tranh","D. Tối đa hóa doanh thu"], ans:0 },
+      { id:"III2-C26", part:"Phần III", chapter:"Chương 2", q:"Câu 26: Kết quả của cạnh tranh nội bộ ngành là gì?", opts:["A. Kìm hãm sự phát triển của khoa học công nghệ","B. Hình thành các tổ chức độc quyền","C. Hình thành giá trị thị trường của từng loại hàng hóa","D. Thiết lập mặt bằng giá cả thị trường cao hơn"], ans:2 },
+      { id:"III2-C28", part:"Phần III", chapter:"Chương 2", q:"Câu 28: Tư bản giả là gì?", opts:["A. Tư bản được sử dụng trong hoạt động kinh doanh phi sản xuất","B. Các loại chứng khoán (cổ phiếu, trái phiếu, …)","C. Tư bản không có giá trị thật","D. Tư bản được tạo ra từ lừa đảo"], ans:1 },
+      { id:"III2-C31", part:"Phần III", chapter:"Chương 2", q:"Câu 31: Vai trò cơ bản của các chủ thể trung gian trong thị trường là?", opts:["A. Môi giới trên thị trường tài chính","B. Làm cầu nối xúc tiến đầu tư trực tiếp nước ngoài","C. Thực hiện chuyển giao công nghệ","D. Làm cầu nối giữa các chủ thể sản xuất, tiêu dùng hàng hóa - dịch vụ trên thị trường"], ans:3 },
+      { id:"III2-C34", part:"Phần III", chapter:"Chương 2", q:"Câu 34: Yếu tố quyết định nhất đến giá cả hàng hóa là:", opts:["A. Sự thay đổi giá trị tiền tệ","B. Giá trị sử dụng của hàng hóa","C. Giá trị của hàng hóa","D. Quan hệ cung - cầu về hàng hóa"], ans:2 },
+      { id:"III2-C35", part:"Phần III", chapter:"Chương 2", q:"Câu 35: Cạnh tranh trong nền kinh tế thị trường là gì?", opts:["A. Một tổ chức kinh tế có thể kiểm soát giá cả và sản lượng của một loại hàng hóa","B. Việc sát nhập – hợp nhất giữa các doanh nghiệp","C. Sự ganh đua giữa các chủ thể kinh tế nhằm thu được lợi ích tối đa","D. Sự kiểm soát của nhà nước đối với hoạt động sản xuất kinh doanh"], ans:2 },
+      { id:"III2-C39", part:"Phần III", chapter:"Chương 2", q:"Câu 39: Trái phiếu là gì?", opts:["A. Giấy tờ xác nhận một khoản vay nợ của công ty hoặc chính phủ, cam kết trả lãi cố định","B. Giấy tờ xác nhận một tài sản bảo đảm của công ty","C. Giấy tờ xác nhận quyền sở hữu một phần tư bản của công ty","D. Hợp đồng mua bán tài sản"], ans:0 },
+      { id:"III2-C40", part:"Phần III", chapter:"Chương 2", q:"Câu 40: Quy luật lưu thông tiền tệ là quy luật kinh tế quy định:", opts:["A. Lãi suất trái phiếu chính phủ","B. Tỷ giá hối đoái giữa đồng tiền nội tệ với các loại ngoại tệ","C. Tổng chi ngân sách nhà nước trong một năm","D. Lượng tiền cần thiết cho lưu thông hàng hóa trong một thời kỳ nhất định"], ans:3 },
+      { id:"III2-C50", part:"Phần III", chapter:"Chương 2", q:"Câu 50: Chính sách tiền tệ nới lỏng nhằm kích thích tăng trưởng kinh tế và giảm tỷ lệ thất nghiệp thông qua:", opts:["A. Giảm Cung tiền","B. Giảm chi tiêu của chính phủ","C. Tăng Cung tiền","D. Tăng đầu tư công"], ans:2 },
+      { id:"III2-C61", part:"Phần III", chapter:"Chương 2", q:"Câu 61: Nếu lượng tiền phát hành vượt quá lượng tiền cần thiết cho lưu thông sẽ dẫn đến hiện tượng:", opts:["A. Lạm phát","B. Giá cả ổn định","C. Tăng trưởng kinh tế bền vững","D. Giảm phát"], ans:0 },
+      { id:"III2-C66", part:"Phần III", chapter:"Chương 2", q:"Câu 66: Thị trường chứng khoán là nơi diễn ra hoạt động gì?", opts:["A. Mua bán hàng hóa tiêu dùng","B. Mua bán bất động sản","C. Mua bán, trao đổi các giấy tờ có giá (cổ phiếu, trái phiếu, ...)","D. Mua bán ngoại tệ"], ans:2 },
+      { id:"III2-C67", part:"Phần III", chapter:"Chương 2", q:"Câu 67: Cổ phiếu là gì?", opts:["A. Giấy tờ mua bán hàng hóa","B. Giấy tờ xác nhận quyền sở hữu một phần tư bản của công ty và quyền hưởng cổ tức","C. Giấy tờ xác nhận một khoản vay nợ của công ty","D. Chứng chỉ vay nợ của công ty"], ans:1 },
+      { id:"III2-C82", part:"Phần III", chapter:"Chương 2", q:"Câu 82: Khi trên thị trường cầu lớn hơn cung, giá cả hàng hóa sẽ có xu hướng?", opts:["A. Ổn định","B. Giảm","C. Tăng hoặc giảm tùy thuộc vào loại hàng hóa","D. Tăng"], ans:3 },
+      { id:"III2-C89", part:"Phần III", chapter:"Chương 2", q:"Câu 89: Vai trò định hướng sản xuất của người tiêu dùng được thể hiện thông qua?", opts:["A. Việc họ kiểm soát giá cả thị trường","B. Việc họ tham gia vào các chính sách của nhà nước","C. Sự lựa chọn và quyết định mua hàng của họ","D. Việc họ sản xuất ra sản phẩm mới"], ans:2 },
+      { id:"III2-C90", part:"Phần III", chapter:"Chương 2", q:"Câu 90: Khái niệm \"Cung\" trong nền kinh tế thị trường được hiểu là:", opts:["A. Người cung cấp hàng hóa, dịch vụ","B. Người mua hàng hóa, dịch vụ","C. Số lượng hàng hóa, dịch vụ mà người sản xuất sẵn sàng và có khả năng cung cấp ra thị trường tại các mức giá khác nhau trong một khoảng thời gian nhất định","D. Tổng sản phẩm quốc nội"], ans:2 },
+      { id:"III2-C93", part:"Phần III", chapter:"Chương 2", q:"Câu 93: Chính sách tài khóa có thể tác động đến tăng trưởng kinh tế thông qua:", opts:["A. Thay đổi lãi suất","B. Kiểm soát lạm phát","C. Điều chỉnh thuế và chi tiêu chính phủ","D. Thu hút đầu tư nước ngoài"], ans:2 },
+      { id:"III2-C96", part:"Phần III", chapter:"Chương 2", q:"Câu 96: Khi Lượng cầu về hàng hóa tăng, giá cả hàng hóa sẽ có xu hướng:", opts:["A. Tăng hoặc giảm tùy thuộc vào loại hàng hóa","B. Giảm","C. Tăng","D. Không thay đổi"], ans:2 },
+      { id:"III2-C99", part:"Phần III", chapter:"Chương 2", q:"Câu 99: Công ty cổ phần là hình thức tổ chức kinh doanh nào?", opts:["A. Công ty trách nhiệm hữu hạn hai thành viên trở lên","B. Công ty tư nhân","C. Công ty hợp danh","D. Công ty mà tư bản của nó được chia thành nhiều phần bằng nhau gọi là cổ phần"], ans:3 },
+      { id:"III2-C100", part:"Phần III", chapter:"Chương 2", q:"Câu 100: Chính sách kinh tế nào sau đây KHÔNG PHẢI là sự vận dụng quy luật cung cầu trong kích thích tăng trưởng kinh tế?", opts:["A. Chính sách kích cầu","B. Chính sách tiền tệ nới lỏng","C. Chính sách tăng cường đầu tư công","D. Chính sách tiền tệ thắt chặt"], ans:3 },
+
+      // ===== PHẦN III - CHƯƠNG 3 =====
+      { id:"III3-C1", part:"Phần III", chapter:"Chương 3", q:"Câu 1: Địa tô chênh lệch I là loại địa tô thu được trên?", opts:["A. Đất đai có độ màu mỡ trung bình và xấu","B. Đất đai không có điều kiện sản xuất tốt","C. Đất đai có vị trí thuận lợi, gần thị trường tiêu thụ","D. Đất đai có độ màu mỡ cao và vị trí thuận lợi hơn"], ans:3 },
+      { id:"III3-C6", part:"Phần III", chapter:"Chương 3", q:"Câu 6: Lợi tức là gì?", opts:["A. Lợi nhuận thu được trong cho thuê bất động sản","B. Phần giá trị thặng dư mà nhà tư bản đi vay trả cho nhà tư bản cho vay","C. Lợi nhuận thu được trong đầu tư sản xuất công nghiệp","D. Phần chênh lệch giữa giá mua và giá bán của nhà tư bản thương nghiệp"], ans:1 },
+      { id:"III3-C21", part:"Phần III", chapter:"Chương 3", q:"Câu 21: Khi hàng hoá bán đúng giá trị thì:", opts:["A. p = 0","B. p = m","C. p > m","D. p < m"], ans:1 },
+      { id:"III3-C33", part:"Phần III", chapter:"Chương 3", q:"Câu 33: Những yếu tố dưới đây, yếu tố nào KHÔNG thuộc tư bản cố định?", opts:["A. Nguyên vật liệu, điện, nước dùng cho sản xuất","B. Nhà xưởng","C. Thiết bị, máy móc","D. Các phương tiện vận tải"], ans:0 },
+      { id:"III3-C49", part:"Phần III", chapter:"Chương 3", q:"Câu 49: Chi phí thực tế của xã hội để sản xuất ra hàng hoá là gì?", opts:["A. Chi phí mua tư liệu sản xuất","B. Chi phí do nhà tư bản ứng ra để mua nguyên vật liệu","C. Chi phí sử dụng lao động sống và chi phí lao động quá khứ","D. Chi phí nhượng quyền thương hiệu"], ans:2 },
+      { id:"III3-C55", part:"Phần III", chapter:"Chương 3", q:"Câu 55: Nguồn gốc của tư bản cho vay là:", opts:["A. Tư bản sử dụng trong lĩnh vực thương mại","B. Tư bản sử dụng trong đầu tư tài chính","C. Tư bản sử dụng trong lĩnh vực sản xuất","D. Tư bản tiền tệ tạm thời nhàn rỗi"], ans:3 },
+      { id:"III3-C60", part:"Phần III", chapter:"Chương 3", q:"Câu 60: Trong các hình thức tư bản dưới đây, tư bản cho vay KHÔNG bắt nguồn từ hình thức nào?", opts:["A. Tiền gửi tiết kiệm của người lao động","B. Tư bản công nghiệp tham gia sản xuất trực tiếp","C. Tư bản tạm thời nhàn rỗi của các công ty","D. Vốn tích luỹ từ ngân sách nhà nước"], ans:1 },
+      { id:"III3-C62", part:"Phần III", chapter:"Chương 3", q:"Câu 62: Tỷ suất lợi tức phụ thuộc vào yếu tố nào?", opts:["A. Mức lợi nhuận bình quân và quan hệ cung cầu về tư bản cho vay","B. Tỷ suất lợi nhuận trung bình trong lĩnh vực thương nghiệp","C. Năng suất lao động","D. Giá cả thị trường"], ans:0 },
+      { id:"III3-C73", part:"Phần III", chapter:"Chương 3", q:"Câu 73: Dựa vào căn cứ nào để chia tư bản thành tư bản bất biến và tư bản khả biến?", opts:["A. Vai trò các bộ phận tư bản trong quá trình sản xuất giá trị thặng dư","B. Tốc độ chu chuyển của tư bản","C. Phương thức chuyển giá trị các bộ phận tư bản vào giá trị sản phẩm","D. Mức độ hao mòn của tư bản cố định"], ans:0 },
+
+      // ===== PHẦN III - CHƯƠNG 4 =====
+      { id:"III4-C2", part:"Phần III", chapter:"Chương 4", q:"Câu 2: Chọn đáp án SAI - Chức năng của sở hữu độc quyền nhà nước:", opts:["A. Mở rộng sản xuất tư bản chủ nghĩa, bảo đảm địa bàn rộng lớn cho sự phát triển của độc quyền","B. Làm chỗ dựa cho điều tiết kinh tế của nhà nước theo các chương trình nhất định","C. Nhà nước nắm giữ những ngành kinh tế trọng yếu để điều tiết, chi phối nền kinh tế","D. Tạo điều kiện thuận lợi cho việc di chuyển tư bản của các tổ chức độc quyền từ ngành lợi nhuận thấp sang cao"], ans:0 },
+      { id:"III4-C8", part:"Phần III", chapter:"Chương 4", q:"Câu 8: Nguyên nhân chủ yếu dẫn đến hình thành lợi nhuận độc quyền là gì?", opts:["A. Cạnh tranh gay gắt giữa các doanh nghiệp vừa và nhỏ","B. Chính sách thuế ưu đãi của nhà nước","C. Địa vị thống trị thị trường của các tổ chức tư bản độc quyền","D. Tăng trưởng năng suất lao động trong khu vực công"], ans:2 },
+      { id:"III4-C20", part:"Phần III", chapter:"Chương 4", q:"Câu 20: Mục đích của xuất khẩu tư bản là?", opts:["A. Bù đắp sự thiếu hụt tư bản ở các nước khác","B. Tăng cường hợp tác quốc tế","C. Tìm kiếm lợi nhuận độc quyền cao và giải quyết vấn đề thừa tư bản","D. Giúp đỡ các nước kém phát triển"], ans:2 },
+      { id:"III4-C25", part:"Phần III", chapter:"Chương 4", q:"Câu 25: Trong giai đoạn độc quyền, nhà nước tư sản có vai trò?", opts:["A. Phục vụ lợi ích của giai cấp tư sản độc quyền","B. Trung lập","C. Chỉ bảo vệ người lao động","D. Không can thiệp vào kinh tế"], ans:0 },
+      { id:"III4-C29", part:"Phần III", chapter:"Chương 4", q:"Câu 29: Nguyên nhân tồn tại địa tô tuyệt đối là do?", opts:["A. Chính sách bảo hộ sản xuất nông nghiệp","B. Độc quyền sở hữu ruộng đất","C. Đất đai khan hiếm","D. Nhu cầu lương thực tăng cao"], ans:1 },
+      { id:"III4-C30", part:"Phần III", chapter:"Chương 4", q:"Câu 30: Độc quyền nhà nước trong chủ nghĩa tư bản ra đời là sự kết hợp?", opts:["A. Lợi ích của nhà nước và nhân dân","B. Các quy luật khách quan và ý chí chủ quan","C. Lợi ích của công nhân và nhà tư bản","D. Lợi ích của toàn xã hội"], ans:1 },
+      { id:"III4-C37", part:"Phần III", chapter:"Chương 4", q:"Câu 37: Lợi nhuận độc quyền cao là do?", opts:["A. Khả năng định giá, chi phối thị trường của các tổ chức độc quyền","B. Nhà nước kiểm soát giá","C. Năng suất lao động cao","D. Cạnh tranh lành mạnh"], ans:0 },
+      { id:"III4-C44", part:"Phần III", chapter:"Chương 4", q:"Câu 44: Sự xuất hiện của độc quyền trong nền kinh tế thị trường tư bản chủ nghĩa là một quá trình?", opts:["A. Tự giác và có kế hoạch","B. Do ý chí chủ quan của nhà nước","C. Khách quan, tuân theo quy luật tập trung sản xuất và tư bản","D. Tự phát và không có quy luật"], ans:2 },
+      { id:"III4-C47", part:"Phần III", chapter:"Chương 4", q:"Câu 47: Giá cả ruộng đất là gì?", opts:["A. Địa tô thu được trên đất đai có điều kiện sản xuất tốt nhất","B. Địa tô thu được trên đất đai có điều kiện sản xuất xấu nhất","C. Địa tô thu được trên đất đai có điều kiện sản xuất trung bình","D. Địa tô quy về một lần, được xác định trên cơ sở địa tô và lãi suất ngân hàng"], ans:3 },
+      { id:"III4-C48", part:"Phần III", chapter:"Chương 4", q:"Câu 48: Địa tô độc quyền là loại địa tô thu được đối với?", opts:["A. Đất đai có vị trí đặc biệt","B. Đất đai do nhà nước quản lý","C. Đất đai có tính chất đặc biệt","D. Đất đai được cải tạo"], ans:2 },
+      { id:"III4-C59", part:"Phần III", chapter:"Chương 4", q:"Câu 59: Đặc điểm nổi bật của chủ nghĩa tư bản hiện nay về mặt sở hữu là?", opts:["A. Đa dạng hóa sở hữu (công ty cổ phần, sở hữu nhà nước, tư nhân)","B. Chỉ có sở hữu nhà nước","C. Chỉ có sở hữu tư nhân nhỏ","D. Chỉ có sở hữu tập thể"], ans:0 },
+      { id:"III4-C65", part:"Phần III", chapter:"Chương 4", q:"Câu 65: Địa tô tư bản chủ nghĩa là gì?", opts:["A. Lợi nhuận mà người nông dân thu được","B. Giá trị của đất đai","C. Phần giá trị thặng dư dôi ra ngoài lợi nhuận bình quân, do nhà tư bản nông nghiệp nộp cho địa chủ","D. Thuế mà nhà nước thu từ đất đai"], ans:2 },
+      { id:"III4-C72", part:"Phần III", chapter:"Chương 4", q:"Câu 72: Hình thức tổ chức độc quyền tờ-rớt khác với các-ten ở chỗ?", opts:["A. Tờ-rớt sáp nhập các doanh nghiệp, mất quyền tự chủ sản xuất và kinh doanh","B. Tờ-rớt là thỏa thuận không chính thức","C. Tờ-rớt chỉ hoạt động trong một ngành duy nhất","D. Tờ-rớt chỉ kiểm soát giá cả"], ans:0 },
+      { id:"III4-C74", part:"Phần III", chapter:"Chương 4", q:"Câu 74: Đâu KHÔNG PHẢI là đặc điểm kinh tế của độc quyền trong chủ nghĩa tư bản?", opts:["A. Tư bản tài chính hình thành","B. Sự tập trung sản xuất và các tổ chức độc quyền đóng vai trò quyết định","C. Xuất khẩu tư bản","D. Cạnh tranh tự do hoàn toàn"], ans:3 },
+      { id:"III4-C76", part:"Phần III", chapter:"Chương 4", q:"Câu 76: Các-ten là hình thức tổ chức độc quyền mà ở đó có sự thỏa thuận giữa các doanh nghiệp về?", opts:["A. Tiền lương công nhân","B. Công nghệ sản xuất","C. Giá cả, sản lượng, thị trường tiêu thụ","D. Sáp nhập toàn bộ"], ans:2 },
+      { id:"III4-C79", part:"Phần III", chapter:"Chương 4", q:"Câu 79: Địa tô tuyệt đối là loại địa tô thu được trên?", opts:["A. Đất có độ màu mỡ và vị trí tốt nhất","B. Đất đai thuộc sở hữu nhà nước","C. Tất cả mọi loại đất đai","D. Đất đai có độ màu mỡ kém nhất"], ans:2 },
+      { id:"III4-C81", part:"Phần III", chapter:"Chương 4", q:"Câu 81: Sự hình thành tư bản tài chính trong chủ nghĩa tư bản làm cho?", opts:["A. Ngân hàng và công nghiệp hoàn toàn độc lập","B. Nền kinh tế trở nên phân tán","C. Các tập đoàn công nghiệp và ngân hàng gắn bó chặt chẽ, tạo ra quyền lực tài chính","D. Các doanh nghiệp nhỏ chiếm ưu thế"], ans:2 },
+      { id:"III4-C83", part:"Phần III", chapter:"Chương 4", q:"Câu 83: Các ngân hàng trong giai đoạn độc quyền?", opts:["A. Không có vai trò quan trọng","B. Chỉ thực hiện chức năng thanh toán","C. Chỉ cho vay tiêu dùng","D. Trở thành những người khổng lồ, chi phối tư bản công nghiệp"], ans:3 },
+      { id:"III4-C87", part:"Phần III", chapter:"Chương 4", q:"Câu 87: Ý nào dưới đây là đúng nhất theo lý luận Mác về địa tô?", opts:["A. Địa tô xuất hiện nhờ cải cách ruộng đất","B. Địa tô chênh lệch hình thành do giá cả thị trường","C. Địa tô tuyệt đối gắn liền với độc quyền tư hữu ruộng đất","D. Địa tô là sản phẩm của nền kinh tế kế hoạch"], ans:2 },
+      { id:"III4-C91", part:"Phần III", chapter:"Chương 4", q:"Câu 91: Địa vị độc quyền cho phép các tổ chức độc quyền trong chủ nghĩa tư bản có khả năng?", opts:["A. Hỗ trợ doanh nghiệp nhỏ","B. Chi phối giá cả, thị trường, thu lợi nhuận độc quyền cao","C. Hạn chế cạnh tranh","D. Đảm bảo công bằng xã hội"], ans:1 },
+
+      // ===== PHẦN III - CHƯƠNG 5+6 =====
+      { id:"III56-C4", part:"Phần III", chapter:"Chương 5+6", q:"Câu 4: Đối với các nước đang và kém phát triển như hiện nay thì hội nhập kinh tế quốc tế càng trở nên cần thiết vì hội nhập kinh tế quốc tế:", opts:["A. Là cơ hội để các nước này tiếp cận và sử dụng được các nguồn lực bên ngoài như tài chính, khoa học - công nghệ, kinh nghiệm của các nước cho phát triển.","B. Tạo ra khoảng cách ngày càng xa giữa các nước phát triển với các nước đang và kém phát triển.","C. Có thể làm gia tăng sự phụ thuộc của nền kinh tế quốc gia vào thị trường bên ngoài.","D. Tạo điều kiện để các nước này tranh thủ nguồn việc trợ từ các nước phát triển trên thế giới."], ans:0 },
+      { id:"III56-C5", part:"Phần III", chapter:"Chương 5+6", q:"Câu 5: Mâu thuẫn giữa lợi ích cá nhân của người lao động và lợi ích của người sử dụng lao động phát sinh chủ yếu từ việc tranh chấp yếu tố nào?", opts:["A. Tiến độ thực hiện dự án đầu tư","B. Tỷ lệ chi trả cổ tức","C. Tỷ lệ phân chia giá trị mới tạo ra (v+m) giữa tiền lương và lợi nhuận","D. Chi phí sử dụng tư liệu sản xuất"], ans:2 },
+      { id:"III56-C7", part:"Phần III", chapter:"Chương 5+6", q:"Câu 7: Chọn đáp án sai về chuẩn bị các điều kiện để thực hiện hội nhập hiệu quả, thành công:", opts:["A. Quá trình hội nhập phải được cân nhắc với lộ trình và cách thức tối ưu.","B. Hội nhập kinh tế quốc tế chỉ cần chú trọng đến hợp tác kinh tế song phương, không cần đến đa phương","C. Phải có sự chuẩn bị các điều kiện trọng nội bộ nền kinh tế cũng như các môi quan hệ quốc tế thích hợp.","D. Hội nhập kinh tế quốc tế là toàn bộ các hoạt động kinh tế đối ngoại của một nước gồm nhiều hình thức như: ngoại thương, đầu tư quốc tế."], ans:1 },
+      { id:"III56-C10", part:"Phần III", chapter:"Chương 5+6", q:"Câu 10: Sự thống nhất giữa lợi ích cá nhân và lợi ích xã hội thể hiện rõ nhất qua hoạt động nào của các chủ thể kinh tế?", opts:["A. Doanh nghiệp đầu tư mở rộng sản xuất, nâng cao chất lượng sản phẩm, nộp thuế và tạo việc làm cho người lao động.","B. Tạo môi trường đầu tư thuận lợi cho thu hút vốn đầu tư trực tiếp nước ngoài","C. Doanh nghiệp nhà nước được Nhà nước bù lỗ để duy trì hoạt động","D. Bảo hộ hoạt động kinh doanh của thành phần kinh tế tập thể"], ans:0 },
+      { id:"III56-C16", part:"Phần III", chapter:"Chương 5+6", q:"Câu 16: Trong bối cảnh cách mạng công nghiệp 4.0, giải pháp hoàn thiện thể chế nào sau đây cần được đặc biệt ưu tiên để thúc đẩy phát triển kinh tế số?", opts:["A. Hoàn thiện thể chế về thị trường khoa học, công nghệ, thông tin và quyền sở hữu trí tuệ.","B. Hoàn thiện thể chế về đất đai và bất động sản.","C. Hoàn thiện thể chế thị trường về hội nhập kinh tế quốc tế","D. Hoàn thiện thể chế về quản lý thuế thu nhập cá nhân."], ans:0 },
+      { id:"III56-C17", part:"Phần III", chapter:"Chương 5+6", q:"Câu 17: Chọn đáp án đúng: Trong các phương diện của toàn cầu hoá, phương diện nào là trung tâm?", opts:["A. Toàn cầu hoá về kinh tế","B. Toàn cầu hoá về chính trị","C. Toàn cầu hoá về văn hoá","D. Toàn cầu hoá về xã hội"], ans:0 },
+      { id:"III56-C18", part:"Phần III", chapter:"Chương 5+6", q:"Câu 18: Trong bối cảnh biến đổi khí hậu, việc Nhà nước đánh thuế carbon (carbon tax) đối với các doanh nghiệp gây ô nhiễm là công cụ nhằm giải quyết mâu thuẫn nào sau đây?", opts:["A. Mâu thuẫn giữa lợi ích doanh nghiệp và lợi ích người tiêu dùng.","B. Mâu thuẫn giữa lợi ích giữa nông nghiệp và công nghiệp.","C. Mâu thuẫn giữa lợi ích ngắn hạn và lợi ích dài hạn của cá nhân.","D. Mâu thuẫn giữa lợi ích cá nhân (doanh nghiệp) và lợi ích xã hội (môi trường)."], ans:3 },
+      { id:"III56-C19", part:"Phần III", chapter:"Chương 5+6", q:"Câu 19: Nội dung “Xây dựng nền kinh tế tự chủ phải trên cơ sở làm chủ công nghệ và chủ động, tích cực hội nhập, đa dạng hóa thị trường, nâng cao khả năng thích ứng của nền kinh tế” được Đảng ta nêu rõ trong văn bản nào dưới đây?", opts:["A. Chiến lược phát triển kinh tế - xã hội 2021 - 2030.","B. Chiến lược phát triển kinh tế - xã hội 2001 – 2010.","C. Chiến lược phát triển kinh tế - xã hội 2011 – 2020.","D. Chiến lược phát triển kinh tế - xã hội 1991 – 2000."], ans:0 },
+      { id:"III56-C23", part:"Phần III", chapter:"Chương 5+6", q:"Câu 23: Chọn đáp án sai về phương hướng nâng cao năng lực cạnh tranh quốc tế của nền kinh tế:", opts:["A. Phải học cách thức kinh doanh trong bối cảnh mới.","B. Để đứng vững trong cạnh tranh các doanh nghiệp phải chú trọng tới đầu tư, cái tiến công nghệ để nâng cao khả năng cạnh tranh của mình.","C. Nhà nước cần tăng cường hỗ trợ các doanh nghiệp, giúp các doanh nghiệp vượt qua những thách thức của thời kỳ hội nhập.","D. Triển khai đầy đủ, nghiêm túc các cam kết hội nhập kinh tế quốc tế, đặc biệt là cắt giảm thuế quan, mở cửa dịch vụ, đầu tư."], ans:2 },
+      { id:"III56-C32", part:"Phần III", chapter:"Chương 5+6", q:"Câu 32: Chọn đáp án đúng nhất: Hội nhập kinh tế quốc tế là gì?", opts:["A. Là quá trình quốc gia đó tham gia vào các tổ chức kinh tế của khu vực và thế giới.","B. Là quá trình quốc gia đó tham gia vào các hoạt động chính trị tại các diễn đàn thế giới.","C. Là quá trình mở cửa nền kinh tế với thế giới.","D. Là quá trình quốc gia đó thực hiện gắn kết nền kinh tế của mình với nền kinh tế thế giới dựa trên sự chia sẻ lợi ích, đồng thời tuân thủ các chuẩn mực quốc tế chung"], ans:3 },
+      { id:"III56-C36", part:"Phần III", chapter:"Chương 5+6", q:"Câu 36: Việc mở rộng và tăng cường vai trò của các tổ chức xã hội - nghề nghiệp có ý nghĩa gì trong việc giải quyết quan hệ lợi ích kinh tế?", opts:["A. Bảo vệ lợi ích của kinh tế nhà nước.","B. Làm giảm vai trò quản lý của Nhà nước về phân phối, để các tổ chức tự quản lý.","C. Thay thế hoàn toàn vai trò của các cơ quan tư pháp trong tranh chấp kinh tế.","D. Làm cầu nối trung gian, bảo vệ lợi ích chính đáng của các chủ thể thành viên và tham gia vào quá trình xây dựng chính sách."], ans:3 },
+      { id:"III56-C38", part:"Phần III", chapter:"Chương 5+6", q:"Câu 38: Chọn đáp án đúng nhất: Bản chất của lợi ích kinh tế là:", opts:["A. Lợi ích kinh tế phản ánh mục đích và động cơ của các quan hệ kinh tế giữa các chủ thể trong nền sản xuất xã hội","B. Lợi ích kinh tế phản ánh mục đích của các quan hệ kinh tế giữa các chủ thể trong nền sản xuất xã hội","C. Lợi ích kinh tế phản ánh động cơ của các quan hệ kinh tế giữa các chủ thể trong nền sản xuất xã hội","D. Lợi ích kinh tế phản ánh mục đích và động cơ của các quan hệ kinh tế"], ans:0 },
+      { id:"III56-C41", part:"Phần III", chapter:"Chương 5+6", q:"Câu 41: Đâu là một thách thức lớn đối với doanh nghiệp Việt Nam trong hội nhập?", opts:["A. Thiếu vốn","B. Khả năng cạnh tranh còn hạn chế, thiếu công nghệ, quản lý chưa chuyên nghiệp","C. Quá nhiều cơ hội","D. Thị trường quá lớn"], ans:1 },
+      { id:"III56-C42", part:"Phần III", chapter:"Chương 5+6", q:"Câu 42: Trong nền kinh tế thị trường định hướng XHCN, vai trò của Nhà nước trong việc đảm bảo hài hòa lợi ích kinh tế được thể hiện rõ nhất qua công cụ nào?", opts:["A. Sử dụng các công cụ kinh tế (thuế, trợ cấp, lãi suất) và pháp luật để điều chỉnh các quan hệ lợi ích.","B. Can thiệp trực tiếp vào quá trình sản xuất của từng doanh nghiệp.","C. Sử dụng công cụ hành chính để yêu cầu các bên phải thỏa hiệp.","D. Chỉ tập trung vào lợi ích của khu vực kinh tế nhà nước."], ans:0 },
+      { id:"III56-C43", part:"Phần III", chapter:"Chương 5+6", q:"Câu 43: Chọn đáp án không đúng: Hội nhập kinh tế quốc tế sâu rộng đòi hỏi Việt Nam phải?", opts:["A. Phụ thuộc hoàn toàn vào các tổ chức và doanh nghiệp nước ngoài","B. Mở rộng thị trường và tăng cường thu hút đầu tư nước ngoài","C. Nâng cao năng lực quản lý và sức cạnh tranh của nền kinh tế","D. Hoàn thiện hệ thống pháp luật, thể chế phù hợp với chuẩn mực quốc tế"], ans:0 },
+      { id:"III56-C45", part:"Phần III", chapter:"Chương 5+6", q:"Câu 45: Yếu tố nào sau đây là biểu hiện của quan hệ lợi ích kinh tế tiêu cực, gây ảnh hưởng xấu đến sự phát triển kinh tế - xã hội?", opts:["A. Đầu tư vào giáo dục, y tế và hạ tầng kỹ thuật của nền kinh tế","B. Cạnh tranh giữa các doanh nghiệp trong cùng một ngành","C. Hợp tác giữa các nhà đầu tư lớn nhằm thao túng thị trường chứng khoán","D. Hoạt động tài trợ của các tổ chức phi chính phủ trong cứu trợ do thiên tai, cung cấp nước sạch và bảo vệ môi trường"], ans:2 },
+      { id:"III56-C46", part:"Phần III", chapter:"Chương 5+6", q:"Câu 46: Việc Nhà nước quy định 'tỷ lệ trích nộp bảo hiểm xã hội bắt buộc' là công cụ nhằm đảm bảo hài hòa lợi ích nào?", opts:["A. Lợi ích giữa các vùng miền kinh tế.","B. Lợi ích giữa các doanh nghiệp vừa và nhỏ.","C. Lợi ích giữa thế hệ hiện tại và thế hệ tương lai.","D. Lợi ích giữa người bán và người mua hàng hóa."], ans:2 },
+      { id:"III56-C51", part:"Phần III", chapter:"Chương 5+6", q:"Câu 51: Quan hệ lợi ích kinh tế trong hội nhập quốc tế được xác định dựa trên nguyên tắc nào là chủ đạo?", opts:["A. Đặc biệt ưu đãi đối với vốn đầu tư trực tiếp nước ngoài (FDI) trong lĩnh vực công nghiệp nặng","B. Ưu tiên lợi ích của các đối tác thương mại lớn.","C. Thực hiện chính sách bảo hộ sản xuất trong nước","D. Đảm bảo lợi ích quốc gia - dân tộc là tối cao, trên cơ sở bình đẳng, cùng có lợi và tôn trọng luật pháp quốc tế."], ans:3 },
+      { id:"III56-C53", part:"Phần III", chapter:"Chương 5+6", q:"Câu 53: Chọn đáp án đúng về tác động tích cực của hội nhập kinh tế quốc tế:", opts:["A. Hội nhập kinh tế quốc tế làm gia tăng sự phụ thuộc của nền kinh tế quốc gia vào thị trường bên ngoài.","B. Hội nhập kinh tế quốc tế dẫn tới các nước đang phát triển đối mặt với nguy cơ chuyển dịch cơ cấu kinh tế tự nhiên bất lợi.","C. Hội nhập kinh tế quốc tế làm gia tăng sự cạnh tranh gay gắt khiến nhiều doanh nghiệp và ngành kinh tế gặp khó khăn trong phát triển.","D. Tạo điều kiện mở rộng thị trường, tiếp thu khoa học - công nghệ, vốn, chuyển dịch cơ cấu kinh tế trong nước."], ans:3 },
+      { id:"III56-C56", part:"Phần III", chapter:"Chương 5+6", q:"Câu 56: Chọn đáp án sai về tác động tiêu cực của hội nhập kinh tế quốc tế:", opts:["A. Hội nhập kinh tế quốc tế làm tăng cơ hội cho các doanh nghiệp trong nước tiếp cận thị trường quốc tế, nguồn tín dụng và các đối tác quốc tế.","B. Hội nhập kinh tế quốc tế làm gia tăng sự phụ thuộc của nền kinh tế quốc gia vào thị trường bên ngoài.","C. Hội nhập kinh tế quốc tế làm gia tăng sự cạnh tranh gay gắt khiến nhiều doanh nghiệp và ngành kinh tế gặp khó khăn trong phát triển.","D. Hội nhập kinh tế quốc tế dẫn tới các nước đang phát triển đối mặt với nguy cơ chuyển dịch cơ cấu kinh tế tự nhiên bất lợi."], ans:0 },
+      { id:"III56-C57", part:"Phần III", chapter:"Chương 5+6", q:"Câu 57: Chọn đáp án đúng: Việt Nam gia nhập Tổ chức Thương mại thế giới (WTO) năm nào?", opts:["A. 2006","B. 2005","C. 2004","D. 2007"], ans:3 },
+      { id:"III56-C58", part:"Phần III", chapter:"Chương 5+6", q:"Câu 58: Việt Nam không tham gia tổ chức nào sau đây:", opts:["A. APEC","B. OPEC","C. ASEAN","D. WTO"], ans:1 },
+      { id:"III56-C63", part:"Phần III", chapter:"Chương 5+6", q:"Câu 63: Mục tiêu chính của chính sách phân phối thu nhập của nhà nước là?", opts:["A. Tăng cường vai trò của Nhà nước trong việc phân phối lại của cải","B. Đảm bảo cán cân thanh toán quốc tế và ổn định kinh tế vĩ mô","C. Giảm thiểu sự phân hóa giàu nghèo, đảm bảo công bằng xã hội","D. Tạo ra sự bình đẳng tuyệt đối về thu nhập giữa các tầng lớp dân cư"], ans:2 },
+      { id:"III56-C64", part:"Phần III", chapter:"Chương 5+6", q:"Câu 64: Hội nhập kinh tế quốc tế mang tính tất yếu khách quan vì:", opts:["A. Hội nhập kinh tế quốc tế là xu hướng phát triển riêng của các nước lớn trên thế giới","B. Hội nhập kinh tế quốc tế góp phần hạn chế chủ quyền quốc gia của các nước kém phát triển","C. Hội nhập kinh tế quốc tế là phương thức phát triển phổ biến của các nước","D. Hội nhập kinh tế quốc tế không phải là con đường giúp các nước kém phát triển khắc phục nguy cơ tụt hậu"], ans:2 },
+      { id:"III56-C68", part:"Phần III", chapter:"Chương 5+6", q:"Câu 68: Động lực trực tiếp của các chủ thể và hoạt động kinh tế - xã hội là:", opts:["A. Lợi ích văn hoá","B. Lợi ích tinh thần","C. Lợi ích chính trị xã hội","D. Lợi ích kinh tế"], ans:3 },
+      { id:"III56-C69", part:"Phần III", chapter:"Chương 5+6", q:"Câu 69: Chọn đáp án đúng nhất: Hội nhập kinh tế quốc tế có tác động tích cực như thế nào tới Việt Nam?", opts:["A. Tạo điều kiện mở rộng thị trường, tiếp thu khoa học công nghệ, vốnn nâng cao chất lượng nguồn nhân lực cho Việt Nam.","B. Giúp mở rộng cơ hội hợp tác để giao lực văn hoá và nâng cao năng lực quốc phòng.","C. Giúp Việt Nam mở rộng hợp tác với các nước, tham gia vào các tổ chức kinh tế quốc tế.","D. Giúp Việt Nam khẳng định vị thế và uy tín trên trường quốc tế."], ans:0 },
+      { id:"III56-C70", part:"Phần III", chapter:"Chương 5+6", q:"Câu 70: Để thích nghi với hội nhập, Việt Nam cần:", opts:["A. Tự sản xuất toàn bộ sản phẩm mà không tham gia thương mại quốc tế","B. Đổi mới tư duy, cải cách thể chế, nâng cao năng lực cạnh tranh","C. Cấm các hoạt động đầu tư từ khu vực doanh nghiệp nước ngoài","D. Hạn chế việc tiếp cận và ứng dụng các tiến bộ khoa học – công nghệ mới"], ans:1 },
+      { id:"III56-C71", part:"Phần III", chapter:"Chương 5+6", q:"Câu 71: Chọn đáp án đúng nhất: Tại sao các quốc gia phải đẩy mạnh hội nhập kinh tế quốc tế?", opts:["A. Do hội nhập giúp các quốc gia phát huy lợi thế và tăng trưởng kinh tế","B. Do sự phát triển của phân công lao động quốc tế","C. Do các yếu tố sản xuất ngày càng mang tính toàn cầu","D. Do nhu cầu hợp tác để giải quyết các vấn đề chung của nhân loại"], ans:0 },
+      { id:"III56-C78", part:"Phần III", chapter:"Chương 5+6", q:"Câu 78: Chọn đáp án đúng nhất: Lợi ích kinh tế là:", opts:["A. Là lợi ích thu được khi thực hiện các hoạt động kinh tế","B. Là các khoản thu nhập của người lao động","C. Là lợi ích vật chất, lợi ích thu được khi thực hiện các hoạt động kinh tế của con người.","D. Là lợi nhuận từ đầu tư sản xuất kinh doanh"], ans:2 },
+      { id:"III56-C80", part:"Phần III", chapter:"Chương 5+6", q:"Câu 80: Nguyên tắc cơ bản của giải quyết những mấu thuẫn trong quan hệ lợi ích kinh tế tại Việt Nam hiện nay là?", opts:["A. Sử dụng biện pháp hành chính để chấm dứt mâu thuẫn.","B. Đặt lợi ích quốc gia - dân tộc lên trên hết, đồng thời phải có sự tham gia và tôn trọng lợi ích chính đáng của tất cả các bên","C. Ưu tiên tuyệt đối lợi ích cá nhân để tạo động lực phát triển kinh tế","D. Nhà nước tham gia giải quyết khi mâu thuẫn đã trở nên gay gắt"], ans:1 },
+      { id:"III56-C84", part:"Phần III", chapter:"Chương 5+6", q:"Câu 84: Để khai thác hiệu quả các Hiệp định thương mại tự do (FTA), Việt Nam cần?", opts:["A. Tăng cường nhập khẩu từ các quốc gia đối tác FTA","B. Hạn chế hoạt động xuất khẩu để bảo vệ thị trường trong nước","C. Nâng cao năng lực cạnh tranh, đa dạng hóa thị trường, nâng cao chất lượng sản phẩm","D. Chỉ tập trung vào phát triển một thị trường duy nhất để giảm rủi ro"], ans:2 },
+      { id:"III56-C85", part:"Phần III", chapter:"Chương 5+6", q:"Câu 85: Phương thức cơ bản để thực hiện lợi ích kinh tế tại Việt Nam hiện nay là", opts:["A. Nhà nước quy định tỷ lệ thanh toán tiền lương cho các ngành","B. Thực hiện lợi ích kinh tế theo nguyên tắc của các tổ chức quốc tế","C. Thực hiện lợi ích kinh tê theo nguyên tắc thị trường","D. Thực hiện lợi ích kinh tế theo nguyên tắc của các tổ chức chính trị"], ans:2 },
+      { id:"III56-C86", part:"Phần III", chapter:"Chương 5+6", q:"Câu 86: Để thành công trong hội nhập, Việt Nam cần chú trọng đến việc?", opts:["A. Tăng cường các biện pháp phòng vệ và hạn chế mở cửa thị trường","B. Nâng cao chất lượng nguồn nhân lực, đặc biệt là nhân lực có trình độ cao","C. Giảm dần các hoạt động trao đổi và hợp tác quốc tế","D. Chỉ dựa vào khai thác tài nguyên thiên nhiên để phát triển kinh tế"], ans:1 },
+      { id:"III56-C88", part:"Phần III", chapter:"Chương 5+6", q:"Câu 88: Hội nhập kinh tế quốc tế có tác động như thế nào đến quan hệ lợi ích kinh tế trong nước?", opts:["A. Mở rộng thị trường, tạo cơ hội cho các chủ thể kinh tế đồng thời gia tăng áp lực cạnh tranh","B. Kìm hãm sự phát triển của lực lượng sản xuất","C. Đảm bảo vai trò chủ đạo của kinh tế nhà nước","D. Tăng tỷ lệ thất nghiệp"], ans:0 },
+      { id:"III56-C94", part:"Phần III", chapter:"Chương 5+6", q:"Câu 94: Nguyên nhân sâu xa dẫn đến mâu thuẫn trong quan hệ lợi ích kinh tế là?", opts:["A. Sự phát triển không đồng đều giữa các vùng kinh tế","B. Sự khác biệt về trình độ và kỹ năng của người lao động","C. Quan hệ sản xuất và phương thức chiếm hữu tư liệu sản xuất","D. Chính sách phân phối thu nhập của nhà nước"], ans:2 },
+      { id:"III56-C95", part:"Phần III", chapter:"Chương 5+6", q:"Câu 95: Mục đích cốt lõi của chính sách an sinh xã hội ở Việt Nam là gì?", opts:["A. Chỉ tập trung vào người già và trẻ em","B. Tăng cường năng lực cạnh tranh của khu vực kinh tế tư nhân","C. Chuyển dịch cơ cấu lao động và phát triển kinh tế tri thức","D. Phòng ngừa, hạn chế và khắc phục rủi ro, bảo đảm an toàn thu nhập và cuộc sống cho mọi người"], ans:3 },
+      { id:"III56-C97", part:"Phần III", chapter:"Chương 5+6", q:"Câu 97: Lợi ích kinh tế của người sử dụng lao động trong quan hệ lao động là?", opts:["A. Tiền lãi từ sở hữu trái phiếu doanh nghiệp","B. Sự gắn bó của người lao động với doanh nghiệp","C. Lợi nhuận và giá trị doanh nghiệp","D. Tiền lương và các khoản thu nhập theo lương"], ans:2 },
+      { id:"III56-C98", part:"Phần III", chapter:"Chương 5+6", q:"Câu 98: Nhiệm vụ nào dưới đây được coi là nhiệm vụ trọng tâm nhằm xây dựng nền kinh tế độc lập, tự chủ, xây dựng cơ sở vật chất cho chủ nghĩa xã hội, giúp Việt Nam đi tắt, đón đầu, tránh nguy cơ tụt hậu xa hơn về kinh tế so với các nước khác?", opts:["A. Đẩy mạnh quan hệ kinh tế đối ngoại và chủ động hội nhập kinh tế quốc tế","B. Kết hợp chặt chẽ kinh tế với quốc phòng, an ninh và đối ngoại trong hội nhập quốc tế","C. Đổi mới, hoàn thiện thể chế kinh tế, hành chính để tăng cường năng lực cạnh tranh của nền kinh tế","D. Đẩy mạnh công nghiệp hóa, hiện đại hóa đất nước"], ans:3 },
+      { id:"III56-C101", part:"Phần III", chapter:"Chương 5+6", q:"Câu 101: Việt Nam ra nhập Hiệp hội các quốc gia Đông Nam Á ( ASEAN) vào năm nào?", opts:["A. 1997","B. 1998","C. 1995","D. 1996"], ans:2 }
+    ];
+
+    const PARTS = ["Tất cả", "Phần I", "Phần II", "Phần III"];
+    const CHAPTERS = ["Tất cả", "Chương 1", "Chương 2", "Chương 3", "Chương 4", "Chương 5+6"];
+    const OPT_LABELS = ["A", "B", "C", "D"];
+
+    // Cấu hình bảng màu Sáng / Tối
+    const getColors = (isDark) => {
+      return isDark ? {
+        pageBg: "#060f1a", bg: "#0a1f35", text: "#d4e8f8", textMuted: "#4d7fa8",
+        primary: "#4fc3f7", border: "#1e3a5f",
+        optBg: "#0d2137", optBgSelected: "#1a3a5c",
+        optText: "#c8d8e8", optTextSelected: "#4fc3f7",
+        optBorder: "#1e3a5f", optBorderSelected: "#4fc3f7",
+        optLabelBg: "#1e3a5f", optLabelBgSelected: "#4fc3f7",
+        optLabelText: "#7fb3d3", optLabelTextSelected: "#000000",
+        correctBg: "rgba(39,174,96,0.2)", correctText: "#27ae60",
+        wrongBg: "rgba(231,76,60,0.2)", wrongText: "#e74c3c",
+        submitBtn: "#27ae60"
+      } : {
+        pageBg: "#f0f2f5", bg: "#ffffff", text: "#2d3748", textMuted: "#718096",
+        primary: "#3182ce", border: "#e2e8f0",
+        optBg: "#ffffff", optBgSelected: "#ebf8ff",
+        optText: "#4a5568", optTextSelected: "#2b6cb0",
+        optBorder: "#e2e8f0", optBorderSelected: "#3182ce",
+        optLabelBg: "#edf2f7", optLabelBgSelected: "#3182ce",
+        optLabelText: "#4a5568", optLabelTextSelected: "#ffffff",
+        correctBg: "#c6f6d5", correctText: "#22543d",
+        wrongBg: "#fed7d7", wrongText: "#822727",
+        submitBtn: "#38a169"
+      };
+    };
+
+    function QuizApp() {
+      const [isDark, setIsDark] = useState(false);
+      const [selPart, setSelPart] = useState("Tất cả");
+      const [selChap, setSelChap] = useState("Tất cả");
+      const [answers, setAnswers] = useState({});
+      const [submitted, setSubmitted] = useState(false);
+      const [currentIdx, setCurrentIdx] = useState(0);
+      const [mode, setMode] = useState("filter");
+
+      const colors = getColors(isDark);
+
+      // Thay đổi màu nền body để đồng bộ giao diện
+      useEffect(() => {
+        document.body.style.backgroundColor = colors.pageBg;
+      }, [isDark, colors.pageBg]);
+
+      const filtered = useMemo(() => {
+        return ALL_QUESTIONS.filter(q =>
+          (selPart === "Tất cả" || q.part === selPart) &&
+          (selChap === "Tất cả" || q.chapter === selChap)
+        );
+      }, [selPart, selChap]);
+
+      const score = useMemo(() => {
+        if (!submitted) return 0;
+        return filtered.filter(q => answers[q.id] === q.ans).length;
+      }, [submitted, filtered, answers]);
+
+      const handleSelect = (qId, optIdx) => {
+        if (submitted) return;
+        // Khóa không cho chọn lại sau khi đã chọn để xem đáp án
+        if (answers[qId] !== undefined) return;
+        setAnswers(prev => ({ ...prev, [qId]: optIdx }));
+      };
+
+      const startQuiz = () => {
+        setAnswers({});
+        setSubmitted(false);
+        setCurrentIdx(0);
+        setMode("quiz");
+      };
+
+      const handleSubmit = () => {
+        // Có thể nộp bài bất kỳ lúc nào, hiển thị hộp thoại xác nhận nếu chưa làm xong
+        const answeredCount = Object.keys(answers).length;
+        if (answeredCount < filtered.length) {
+            if(!window.confirm(`Bạn mới làm ${answeredCount}/${filtered.length} câu. Bạn có chắc chắn muốn nộp bài sớm không?`)) {
+                return;
+            }
+        }
+        setSubmitted(true);
+        setMode("review");
+        setCurrentIdx(0);
+      };
+
+      const reset = () => {
+        if (mode === "quiz" && Object.keys(answers).length > 0 && !submitted) {
+            if(!window.confirm("Dữ liệu đang làm sẽ bị mất. Bạn muốn quay lại?")) return;
+        }
+        setAnswers({});
+        setSubmitted(false);
+        setMode("filter");
+        setCurrentIdx(0);
+      };
+
+      const answered = filtered.filter(q => q.id in answers).length;
+      const pct = filtered.length > 0 ? Math.round((score / filtered.length) * 100) : 0;
+
+      // CHẾ ĐỘ LÀM BÀI (QUIZ)
+      if (mode === "quiz") {
+        const q = filtered[currentIdx];
+        const userAns = answers[q.id];
+        const hasAnswered = userAns !== undefined;
+
+        return (
+          <div style={{...styles.root, backgroundColor: colors.pageBg}}>
+            <div style={{...styles.header, backgroundColor: colors.bg, borderBottomColor: colors.border}}>
+              <button style={{...styles.btnOutline, color: colors.textMuted, borderColor: colors.border}} onClick={reset}>
+                ← Quay lại
+              </button>
+              <button style={{...styles.btnOutline, color: colors.textMuted, borderColor: colors.border}} onClick={() => setIsDark(!isDark)}>
+                {isDark ? "☀️ Sáng" : "🌙 Tối"}
+              </button>
+            </div>
+
+            <div style={styles.progressBar}>
+              <div style={{ ...styles.progressFill, width: `${((currentIdx+1)/filtered.length)*100}%` }} />
+            </div>
+            
+            <div style={{textAlign: "center", marginTop: 12}}>
+               <span style={{ fontSize: 13, color: colors.primary, background: colors.optLabelBg, padding: "4px 10px", borderRadius: 20, fontWeight: 500 }}>
+                 {q.part} · {q.chapter}
+               </span>
+               <div style={{ fontSize: 13, color: colors.textMuted, marginTop: 8, fontWeight: 500 }}>
+                 Câu {currentIdx+1} / {filtered.length}
+               </div>
+            </div>
+
+            <div style={{...styles.questionCard, backgroundColor: colors.bg, borderColor: colors.border}}>
+              <div style={{...styles.questionText, color: colors.text}}>{q.q}</div>
+              <div style={styles.optList}>
+                {q.opts.map((opt, i) => {
+                  const isSelected = userAns === i;
+                  const isCorrect = i === q.ans;
+                  const isWrongSelected = isSelected && !isCorrect;
+
+                  let bg = colors.optBg;
+                  let border = `2px solid ${colors.optBorder}`;
+                  let textColor = colors.optText;
+                  let labelBg = colors.optLabelBg;
+                  let labelColor = colors.optLabelText;
+
+                  // Xử lý màu sắc hiển thị đáp án sau khi đã click
+                  if (hasAnswered) {
+                    if (isCorrect) {
+                      bg = colors.correctBg;
+                      border = `2px solid ${colors.correctText}`;
+                      textColor = colors.correctText;
+                      labelBg = colors.correctText;
+                      labelColor = "#ffffff";
+                    } else if (isWrongSelected) {
+                      bg = colors.wrongBg;
+                      border = `2px solid ${colors.wrongText}`;
+                      textColor = colors.wrongText;
+                      labelBg = colors.wrongText;
+                      labelColor = "#ffffff";
+                    } else {
+                      border = `2px solid ${colors.border}`;
+                      textColor = colors.textMuted;
+                    }
+                  } else if (isSelected) {
+                    bg = colors.optBgSelected;
+                    border = `2px solid ${colors.optBorderSelected}`;
+                    textColor = colors.optTextSelected;
+                    labelBg = colors.optLabelBgSelected;
+                    labelColor = colors.optLabelTextSelected;
+                  }
+
+                  return (
+                    <button
+                      key={i}
+                      style={{
+                        ...styles.optBtn,
+                        background: bg,
+                        border: border,
+                        color: textColor,
+                        transform: isSelected && !hasAnswered ? "translateX(6px)" : "none",
+                        cursor: hasAnswered ? "default" : "pointer",
+                        opacity: hasAnswered && !isCorrect && !isWrongSelected ? 0.6 : 1
+                      }}
+                      onClick={() => handleSelect(q.id, i)}
+                    >
+                      <span style={{
+                        ...styles.optLabel,
+                        background: labelBg,
+                        color: labelColor
+                      }}>{OPT_LABELS[i]}</span>
+                      {opt.replace(/^[A-D]\.\s/, "")}
+                      
+                      {/* Thêm icon tick hoặc x ở đuôi */}
+                      {hasAnswered && isCorrect && <span style={{ marginLeft: "auto", fontSize: 16, fontWeight: "bold" }}>✓</span>}
+                      {hasAnswered && isWrongSelected && <span style={{ marginLeft: "auto", fontSize: 16, fontWeight: "bold" }}>✗</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={styles.navRow}>
+              <button style={{...styles.navBtn, background: colors.bg, color: colors.text, borderColor: colors.border, opacity: currentIdx === 0 ? 0.4 : 1}} 
+                      onClick={() => setCurrentIdx(Math.max(0, currentIdx-1))} disabled={currentIdx===0}>
+                ← Câu trước
+              </button>
+              
+              <button style={{...styles.submitBtn, backgroundColor: colors.submitBtn}} onClick={handleSubmit}>
+                Nộp bài ({answered}/{filtered.length})
+              </button>
+
+              <button style={{...styles.navBtn, background: colors.bg, color: colors.text, borderColor: colors.border, opacity: currentIdx === filtered.length - 1 ? 0.4 : 1}} 
+                      onClick={() => setCurrentIdx(Math.min(filtered.length - 1, currentIdx+1))} disabled={currentIdx === filtered.length - 1}>
+                Câu tiếp →
+              </button>
+            </div>
+            
+            <div style={{display: 'flex', justifyContent: 'center', gap: 6, margin: "10px 0"}}>
+                {filtered.slice(Math.max(0,currentIdx-3), Math.min(filtered.length, currentIdx+4)).map((_, i) => {
+                  const idx = Math.max(0, currentIdx-3) + i;
+                  const isCurrent = idx === currentIdx;
+                  const isAnswered = answers[filtered[idx]?.id] !== undefined;
+                  return <div key={idx} style={{ 
+                    ...styles.dot, 
+                    background: isCurrent ? colors.primary : isAnswered ? colors.submitBtn : colors.border 
+                  }} />;
+                })}
+            </div>
+          </div>
+        );
+      }
+
+      // CHẾ ĐỘ KẾT QUẢ (REVIEW)
+      if (mode === "review") {
+        return (
+          <div style={{...styles.root, backgroundColor: colors.pageBg}}>
+            <div style={{...styles.header, backgroundColor: colors.bg, borderBottomColor: colors.border}}>
+              <button style={{...styles.btnOutline, color: colors.textMuted, borderColor: colors.border}} onClick={reset}>
+                ← Quay lại
+              </button>
+              <button style={{...styles.btnOutline, color: colors.textMuted, borderColor: colors.border}} onClick={() => setIsDark(!isDark)}>
+                {isDark ? "☀️ Sáng" : "🌙 Tối"}
+              </button>
+            </div>
+
+            <div style={{...styles.scoreCard, backgroundColor: colors.bg, borderColor: colors.border}}>
+              <div style={styles.scoreCircle}>
+                <div style={{...styles.scoreNum, color: colors.primary}}>{score}</div>
+                <div style={{...styles.scoreDen, color: colors.textMuted}}>/{filtered.length}</div>
+              </div>
+              <div style={{...styles.scorePct, color: colors.submitBtn}}>{pct}%</div>
+              <div style={{...styles.scoreMsg, color: colors.text}}>
+                {pct >= 80 ? "🎉 Xuất sắc!" : pct >= 60 ? "👍 Khá tốt!" : "📚 Cần ôn tập thêm"}
+              </div>
+            </div>
+
+            <div style={styles.reviewList}>
+              {filtered.map((q) => {
+                const ua = answers[q.id];
+                const correct = ua === q.ans;
+                // Nếu chưa trả lời, xem như sai và hiển thị đáp án đúng
+                const isSkipped = ua === undefined; 
+
+                return (
+                  <div key={q.id} style={{ ...styles.reviewItem, backgroundColor: colors.bg, borderColor: colors.border, borderLeft: `4px solid ${correct ? colors.correctText : colors.wrongText}` }}>
+                    <div style={{...styles.reviewQ, color: colors.text}}>
+                      <span style={{ color: correct ? colors.correctText : colors.wrongText, marginRight: 8, fontWeight: 'bold' }}>
+                        {correct ? "✓" : (isSkipped ? "⚠" : "✗")}
+                      </span>
+                      {q.q}
+                      {isSkipped && <span style={{marginLeft: 6, fontSize: 12, color: colors.wrongText}}>(Chưa chọn)</span>}
+                    </div>
+                    <div style={styles.reviewOpts}>
+                      {q.opts.map((opt, i) => {
+                        const isCorrect = i === q.ans;
+                        const isUser = i === ua;
+                        let bg = "transparent";
+                        let textColor = colors.textMuted;
+                        
+                        if (isCorrect) { bg = colors.correctBg; textColor = colors.correctText; }
+                        else if (isUser && !correct) { bg = colors.wrongBg; textColor = colors.wrongText; }
+                        
+                        return (
+                          <div key={i} style={{ ...styles.reviewOpt, background: bg, color: textColor }}>
+                            <span style={{ fontWeight: 700, marginRight: 8 }}>{OPT_LABELS[i]}.</span>
+                            {opt.replace(/^[A-D]\.\s/, "")}
+                            {isCorrect && <span style={{ marginLeft: 8, fontWeight: 'bold' }}>✓</span>}
+                            {isUser && !correct && <span style={{ marginLeft: 8, fontWeight: 'bold' }}>← bạn chọn</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button style={{ ...styles.submitBtn, margin: "24px auto", display: "block", width: "calc(100% - 32px)", maxWidth: "400px", backgroundColor: colors.primary }} onClick={reset}>
+              🔄 Làm lại từ đầu
+            </button>
+          </div>
+        );
+      }
+
+      // CHẾ ĐỘ CHỌN ĐỀ (FILTER - Default)
+      return (
+        <div style={{...styles.root, backgroundColor: colors.pageBg}}>
+          <div style={{...styles.header, backgroundColor: colors.bg, borderBottomColor: colors.border}}>
+            <span style={{...styles.logo, color: colors.primary}}>📘 KTCT Mác-Lênin</span>
+            <button style={{...styles.btnOutline, color: colors.textMuted, borderColor: colors.border}} onClick={() => setIsDark(!isDark)}>
+              {isDark ? "☀️ Sáng" : "🌙 Tối"}
+            </button>
+          </div>
+
+          <div style={{...styles.filterCard, backgroundColor: colors.bg, borderColor: colors.border}}>
+            <div style={{...styles.filterLabel, color: colors.textMuted}}>Chọn Phần</div>
+            <div style={styles.filterRow}>
+              {PARTS.map(p => (
+                <button key={p} style={{ 
+                  ...styles.filterBtn, 
+                  background: selPart===p ? colors.primary : colors.bg, 
+                  color: selPart===p ? "#ffffff" : colors.text, 
+                  border: selPart===p ? `1px solid ${colors.primary}` : `1px solid ${colors.border}` 
+                }} onClick={() => setSelPart(p)}>{p}</button>
+              ))}
+            </div>
+
+            <div style={{...styles.filterLabel, color: colors.textMuted}}>Chọn Chương</div>
+            <div style={styles.filterRow}>
+              {CHAPTERS.map(c => (
+                <button key={c} style={{ 
+                  ...styles.filterBtn, 
+                  background: selChap===c ? colors.primary : colors.bg, 
+                  color: selChap===c ? "#ffffff" : colors.text, 
+                  border: selChap===c ? `1px solid ${colors.primary}` : `1px solid ${colors.border}` 
+                }} onClick={() => setSelChap(c)}>{c}</button>
+              ))}
+            </div>
+
+            <div style={styles.countRow}>
+              <span style={{...styles.countNum, color: colors.primary}}>{filtered.length}</span>
+              <span style={{...styles.countLabel, color: colors.textMuted}}> câu hỏi được chọn</span>
+            </div>
+
+            {filtered.length > 0 && (
+              <button style={{...styles.startBtn, background: colors.primary}} onClick={startQuiz}>
+                ▶ Bắt đầu làm bài
+              </button>
+            )}
+          </div>
+
+          <div style={styles.statsGrid}>
+            {["Phần I","Phần II","Phần III"].map(p => {
+              const chs = ["Chương 1","Chương 2","Chương 3","Chương 4", "Chương 5+6"];
+              return (
+                <div key={p} style={{...styles.statCard, backgroundColor: colors.bg, borderColor: colors.border}}>
+                  <div style={{...styles.statTitle, color: colors.primary}}>{p}</div>
+                  {chs.map(c => {
+                    const n = ALL_QUESTIONS.filter(q => q.part===p && q.chapter===c).length;
+                    return n > 0 ? (
+                      <div key={c} style={styles.statRow}>
+                        <span style={{...styles.statChap, color: colors.text}}>{c}</span>
+                        <span style={{...styles.statNum, color: colors.textMuted, background: colors.optLabelBg}}>{n} câu</span>
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    const styles = {
+      root: { minHeight: "100vh", padding: "0 0 40px", maxWidth: "600px", margin: "0 auto", boxShadow: "0 0 20px rgba(0,0,0,0.05)", transition: "background-color 0.3s" },
+      header: { padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid", position: "sticky", top: 0, zIndex: 10, transition: "all 0.3s" },
+      logo: { fontSize: 18, fontWeight: 700, letterSpacing: 0.5 },
+      btnOutline: { padding: "6px 12px", borderRadius: 8, background: "transparent", border: "1px solid", cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit" },
+
+      progressBar: { height: 4, background: "transparent", position: "relative" },
+      progressFill: { height: "100%", background: "linear-gradient(90deg, #4299e1, #38a169)", transition: "width 0.3s ease-in-out" },
+
+      questionCard: { margin: "16px", borderRadius: 12, padding: "24px", border: "1px solid", boxShadow: "0 4px 6px rgba(0,0,0,0.05)", transition: "all 0.3s" },
+      questionText: { fontSize: 16, lineHeight: 1.6, marginBottom: 20, fontWeight: 600 },
+      optList: { display: "flex", flexDirection: "column", gap: 10 },
+      optBtn: { display: "flex", alignItems: "flex-start", gap: 12, padding: "14px", borderRadius: 8, textAlign: "left", fontSize: 14, lineHeight: 1.5, transition: "all 0.2s ease", fontFamily: "inherit", fontWeight: 500 },
+      optLabel: { minWidth: 26, height: 26, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0, marginTop: 1 },
+
+      navRow: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px" },
+      navBtn: { border: "1px solid", padding: "10px 14px", borderRadius: 8, cursor: "pointer", fontSize: 14, fontFamily: "inherit", fontWeight: 600, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" },
+      submitBtn: { border: "none", color: "#ffffff", padding: "10px 16px", borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" },
+      dot: { width: 8, height: 8, borderRadius: "50%", transition: "background 0.2s" },
+
+      filterCard: { margin: 16, borderRadius: 12, padding: 24, border: "1px solid", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" },
+      filterLabel: { fontSize: 12, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10, marginTop: 16, fontWeight: 700 },
+      filterRow: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 },
+      filterBtn: { padding: "8px 16px", borderRadius: 20, cursor: "pointer", fontSize: 14, fontFamily: "inherit", fontWeight: 600, transition: "all 0.15s" },
+      countRow: { margin: "24px 0 16px", textAlign: "center" },
+      countNum: { fontSize: 40, fontWeight: 800 },
+      countLabel: { fontSize: 15, fontWeight: 500 },
+      startBtn: { width: "100%", padding: "16px", border: "none", borderRadius: 10, color: "#ffffff", fontSize: 16, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", marginTop: 8, boxShadow: "0 4px 6px rgba(0,0,0,0.1)" },
+
+      statsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12, margin: "0 16px" },
+      statCard: { borderRadius: 10, padding: "16px", border: "1px solid", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" },
+      statTitle: { fontSize: 14, fontWeight: 700, marginBottom: 12 },
+      statRow: { display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "center" },
+      statChap: { fontSize: 13, fontWeight: 500 },
+      statNum: { fontSize: 12, padding: "2px 6px", borderRadius: 4 },
+
+      scoreCard: { margin: "24px 16px 20px", borderRadius: 16, padding: "32px 20px", border: "1px solid", textAlign: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" },
+      scoreCircle: { display: "flex", justifyContent: "center", alignItems: "baseline", gap: 4 },
+      scoreNum: { fontSize: 72, fontWeight: 800, lineHeight: 1 },
+      scoreDen: { fontSize: 28, fontWeight: 600 },
+      scorePct: { fontSize: 24, fontWeight: 700, marginTop: 8 },
+      scoreMsg: { fontSize: 16, marginTop: 12, fontWeight: 500 },
+
+      reviewList: { margin: "0 16px", display: "flex", flexDirection: "column", gap: 16 },
+      reviewItem: { borderRadius: 10, padding: 16, border: "1px solid", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" },
+      reviewQ: { fontSize: 15, lineHeight: 1.6, marginBottom: 12, fontWeight: 600 },
+      reviewOpts: { display: "flex", flexDirection: "column", gap: 6 },
+      reviewOpt: { fontSize: 14, padding: "8px 12px", borderRadius: 8, lineHeight: 1.5 },
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<QuizApp />);
+  </script>
+</body>
+</html>
