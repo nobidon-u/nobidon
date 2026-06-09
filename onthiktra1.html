@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .header{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgb(18, 18, 17);
+        }
+        .head{
+            color: aliceblue;
+            font-weight: 900;
+            padding: 30px;
+        }
+        .menu li{
+            display:inline-block;
+            color: rgb(220, 227, 233);
+            list-style: none;
+            padding: 12px;
+        }
+        .menu ul li a{
+            color: aliceblue;
+            text-decoration: none;
+        }
+        .layout{
+            display:flex;
+            background-color: rgb(157, 162, 166);
+        }
+        .main{
+            display: flex;
+            flex-direction: column;
+            flex:1;
+        }
+        .sidebar{
+            background-color: rgb(255, 255, 255);
+            padding: 10px;
+            margin: 7px;
+            border-radius: 5px;;
+        }
+        .sidebar li{
+            list-style-type: none;
+            margin-bottom: 10px;
+        }
+        .sidebar ul{
+            padding-left: 0;
+        }
+        .sidebar ul li a{
+            color: rgb(16, 17, 17);
+            text-decoration: none;
+        }
+        .sidebar ul li:hover {
+            background-color: aqua;
+        }
+        .main1{
+            display:flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f3f5; 
+            padding: 30px; 
+            border-radius: 8px; 
+            margin-bottom: 30px;
+            margin:7px;
+        }
+        .boxright{
+            background-color: aqua;
+            border-radius: 10px;
+            padding: 30px 40px;
+            color: blueviolet;
+            font-weight: 700;
+            border:2px dashed black;
+        }
+        .main1 h3{
+            margin:0;
+        }
+        .sidebar h3{
+            margin:0;
+        }
+        .main2{
+            display: flex; 
+            justify-content: space-around; 
+            background: white; 
+            margin-bottom: 30px;
+            border-radius: 5px;
+            margin:7px;
+            gap:20px;
+            background-color: transparent;
+
+        }
+        .main21{
+            flex:1;
+            background-color: white;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .main3{
+            background-color: #f1f3f5;
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px;
+            border-radius: 5px;
+            margin:7px;
+        }
+        .img-placeholder{
+            background-color: yellow;
+            padding:50px;
+            text-align: center;
+            border-radius: 5px;
+            margin:10px;
+        }
+        .main31 h3{
+            margin:10px;
+        }
+        .main31 p{
+            margin:10px;
+        }
+        .main32{
+            display:flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-right: 10px;
+        }
+        h3{
+            margin:7px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="head">MyWebsite</div>
+        <div class="menu">
+            <ul>
+                <li><a href="#">Trang chủ</a></li>
+                <li><a href="#">Sản phẩm</a></li>
+                <li><a href="#">Dịch vụ</a></li>
+                <li><a href="#">Liên hệ</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="layout">
+        <div class="sidebar">
+            <h3>Sidebar</h3>
+            <ul>
+                <li><a href="">Dashboard</a></li>
+                <li><a href="">Quản lý sản phẩm</a></li>
+                <li><a href="">Quản lý người dùng</a></li>
+                <li><a href="">Báo cáo</a></li>
+            </ul>
+        </div>
+        <div class="main">
+            <div class="main1">
+                <div class="main11">
+                    <h3>Demo Flexbox và Grid</h3>
+                    <p>Đừng nói chi em ơi. Tình yêu không cần nói</p>
+                    <div class="button">
+                        <button class="btn1">Thanhvp</button>
+                        <button class="btn2">Thanhga</button>
+                    </div>
+                </div>
+                <div class="boxright">Flexbox</div>
+            </div>
+            <div class="main2">
+                <div class="main21">
+                    <h3>120</h3>
+                    <p>abc</p>
+                </div>
+                <div class="main21">
+                    <h3>120</h3>
+                    <p>abc</p>
+                </div>
+                <div class="main21">
+                    <h3>120</h3>
+                    <p>abc</p>
+                </div>
+            </div>
+            <h3>Danh sách sản phẩm</h3>
+            <div class="main3">
+                <div class="main31">
+                            <div class="img-placeholder">ảnh 1</div>
+                            <h3>Sản phẩm 1</h3>
+                            <p>dấu chấm</p>
+                            <div class="main32">
+                                <h3>100k</h3>
+                                <button>Mua</button>
+                            </div>
+                </div>
+                <div class="main31">
+                            <div class="img-placeholder">ảnh 1</div>
+                            <h3>Sản phẩm 1</h3>
+                            <p>dấu chấm</p>
+                            <div class="main32">
+                                <h3>100k</h3>
+                                <button>Mua</button>
+                            </div>
+                </div>
+                <div class="main31">
+                            <div class="img-placeholder">ảnh 1</div>
+                            <h3>Sản phẩm 1</h3>
+                            <p>dấu chấm</p>
+                            <div class="main32">
+                                <h3>100k</h3>
+                                <button>Mua</button>
+                            </div>
+                </div>
+                <div class="main31">
+                            <div class="img-placeholder">ảnh 1</div>
+                            <h3>Sản phẩm 1</h3>
+                            <p>dấu chấm</p>
+                            <div class="main32">
+                                <h3>100k</h3>
+                                <button>Mua</button>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
